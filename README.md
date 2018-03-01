@@ -11,15 +11,20 @@ PiWS services.
 
 * Summary of set up
 * Configuration
-* Database configuration
-* How to run tests
-* Deployment instructions
 
 
 #### Dependencies
 
+* Ansible
+* Git
 * Arudino Temperature Control Library (Dallas Temperature)
 * DHT library
+
+
+#### Database Deployment
+
+PiWS uses (Sqitch)[https://github.com/theory/sqitch]
+to deploy and manage the PostgreSQL database.  
 
 
 #### Deployment Instructions

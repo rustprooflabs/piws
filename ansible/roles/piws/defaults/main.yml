@@ -1,6 +1,6 @@
 ---
 
-repo_url: git@bitbucket.org:rustprooflabs/piweatherstation.git
+repo_url: https://github.com/rustprooflabs/piws.git
 repo_path: /srv/piws
 repo_branch: master
 ssh_path: /root/.ssh
