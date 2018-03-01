@@ -1,10 +1,10 @@
 [piws]
-10.0.0.97
+127.0.0.1
 
 
 [piws:vars]
 ssh_path=/root/.ssh
-repo_branch=working
+repo_branch=dev
 
 # ansible_user requires Ansible v2.0
 ansible_user=root
