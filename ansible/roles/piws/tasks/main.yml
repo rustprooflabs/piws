@@ -16,7 +16,6 @@
     name: "{{ piws_db_name }}"
     encoding: UTF-8
     template: template0
-    ssl_mode: require
   become_user: postgres
 
 
