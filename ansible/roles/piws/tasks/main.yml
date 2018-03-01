@@ -1,0 +1,46 @@
+---
+
+
+- name: "Clone Pi Weather Station (PiWS) Repository.  Branch:  {{ repo_branch }}"
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_path }}"
+    version: "{{ repo_branch }}"
+    key_file: "{{ ssh_path }}/id_rsa"
+    accept_hostkey: yes
+    force: yes
+
+
+- name: Create piws database
+  postgresql_db:
+    name: "{{ piws_db_name }}"
+    encoding: UTF-8
+    template: template0
+    ssl_mode: require
+  become_user: postgres
+
+
+- name: Create piws Database user
+  postgresql_user:
+    db: "{{ piws_db_name }}"
+    name: "{{ piws_db_user }}"
+    password: "{{ piws_db_password }}"
+    priv: "ALL"
+  become_user: postgres
+
+
+- name: Deploy database using Sqitch
+  shell: "sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  args:
+    chdir: "{{ repo_path }}/db"
+
+
+
+- name: Verify database using Sqitch
+  shell: "sqitch verify db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  args:
+    chdir: "{{ repo_path }}/db"
+
+
+
+...

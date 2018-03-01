@@ -1,0 +1,13 @@
+---
+
+repo_url: git@bitbucket.org:rustprooflabs/piweatherstation.git
+repo_path: /srv/piws
+repo_branch: master
+ssh_path: /root/.ssh
+
+piws_db_name: piws
+piws_db_user: piws
+piws_db_ip: 127.0.0.1
+
+
+...

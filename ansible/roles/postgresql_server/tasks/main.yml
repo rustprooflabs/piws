@@ -1,0 +1,39 @@
+---
+
+
+- name: "Install PostgreSQL {{ pg_version }} packages"
+  apt:
+    package: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items:
+    - "postgresql-{{ pg_version }}"
+    - python-psycopg2
+    - sqitch
+
+
+- name: Copy postgres.conf template
+  template:
+    src: postgresql.conf.j2
+    dest: "/etc/postgresql/{{ pg_version }}/main/postgresql.conf"
+    owner: postgres
+    group: postgres
+  notify:
+    - Restart PostgreSQL
+
+
+- name: Copy pg_hba.conf template
+  template:
+    src: pg_hba.conf.j2
+    dest: "/etc/postgresql/{{ pg_version }}/main/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: 0640
+  notify:
+    - Restart PostgreSQL
+
+
+
+
+...

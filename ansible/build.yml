@@ -1,0 +1,13 @@
+---
+
+- hosts: piws
+
+  roles:
+    - server
+    - ssh
+    - ufw
+    - postgresql_server
+    - sqitch
+    - piws
+
+...
