@@ -1,0 +1,15 @@
+---
+
+- name: Ensure user .sqitch directory exists
+  file:
+    path: /root/.sqitch
+    state: directory
+
+- name: Copy sqitch user configuration
+  template:
+    src: sqitch.conf.j2
+    dest: /root/.sqitch/sqitch.conf
+    owner: root
+    group: root
+
+...

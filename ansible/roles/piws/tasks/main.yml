@@ -1,0 +1,126 @@
+---
+
+
+- name: "Clone Pi Weather Station (PiWS) Repository.  Branch:  {{ repo_branch }}"
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_path }}"
+    version: "{{ repo_branch }}"
+    key_file: "{{ ssh_path }}/id_rsa"
+    accept_hostkey: yes
+    force: yes
+
+
+- name: Create piws database
+  postgresql_db:
+    name: "{{ piws_db_name }}"
+    encoding: UTF-8
+    template: template0
+  become_user: postgres
+
+
+- name: Create piws Database user
+  postgresql_user:
+    db: "{{ piws_db_name }}"
+    name: "{{ piws_db_user }}"
+    password: "{{ piws_db_password }}"
+    priv: "ALL"
+  become_user: postgres
+
+
+- name: Deploy database using Sqitch
+  shell: "sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  args:
+    chdir: "{{ repo_path }}/db"
+
+
+
+- name: Verify database using Sqitch
+  shell: "sqitch verify db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  args:
+    chdir: "{{ repo_path }}/db"
+
+
+- name: Install virtualenv via pip
+  pip:
+    name: virtualenv
+    executable: pip
+
+
+- name: "Setup {{ python_version }} venv for running the site from requirements file: {{ repo_path  }}/requirements.txt "
+  pip:
+    virtualenv: "{{ venv_path }}"
+    virtualenv_python: "{{ python_version }}"
+    requirements: "{{ repo_path }}/requirements.txt"
+    state: present
+
+
+
+- name: "Remove old piws/ directory"
+  file:
+    path: "{{ venv_path }}/bin/piws/"
+    state: absent
+
+
+- name: "Copy files to venv/bin folder for server to run.  "
+  command: "cp -r {{ repo_path }}/{{ item }} {{ venv_path }}/bin/"
+  with_items:
+   - "run_station.py"
+   - "piws/"
+  args:
+    chdir: "{{ repo_path }}"
+
+
+- name: "Set piws as owner to directory"
+  file:
+    path: "{{ venv_path }}/bin"
+    recurse: yes
+    owner: "piws"
+    group: "piws"
+    mode: 0770
+
+
+- name: Ensure log directory exists
+  file:
+    path: /var/log/piws
+    state: directory
+    owner: piws
+    group: piws
+    mode: 0755
+
+
+- name: "Ensure log file exists and is owned by piws"
+  file:
+    path: /var/log/piws/piws.log
+    state: touch
+    owner: piws
+    group: piws
+    mode: 0640
+
+
+- name: "Setup Service (systemd) for piws"
+  template:
+    src: piws.service.j2
+    dest: "/etc/systemd/system/piws.service"
+    owner: piws
+    group: piws
+    mode: 0755
+
+
+- name: Setup EnvironmentFile for service and its secrets.
+  template:
+    src: piws.env.j2
+    dest: "{{ venv_path }}/bin/piws.env"
+    owner: "piws"
+    group: "piws"
+    mode: 0440
+
+
+- name: Enable service (systemctl)
+  command: "systemctl enable piws"
+  notify:
+    - "Restart PiWS service"
+
+
+
+...

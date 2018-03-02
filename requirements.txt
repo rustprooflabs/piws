@@ -1,0 +1,4 @@
+psycopg2==2.7.3.2
+PyYAML==3.12
+pyserial==3.4
+

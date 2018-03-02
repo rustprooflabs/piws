@@ -1,0 +1,27 @@
+---
+
+- name: Enable UFW Logging
+  ufw:
+    logging: on
+
+
+- name: Allow SSH Traffic and log connections
+  ufw:
+    rule: allow
+    port: "{{ ssh_port }}"
+    proto: tcp
+    log: yes
+
+- name: Allow PostgreSQL Traffic
+  ufw:
+    rule: allow
+    port: 5432
+    proto: tcp
+
+
+- name: Enable UFW with default of deny
+  ufw:
+    state: enabled
+    policy: deny
+
+...

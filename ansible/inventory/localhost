@@ -1,0 +1,13 @@
+[piws]
+127.0.0.1
+
+
+[piws:vars]
+ssh_path=/root/.ssh
+repo_branch=dev
+
+# ansible_user requires Ansible v2.0
+ansible_user=root
+ansible_become=true
+AllowUsers=root {{ piws_admin_user }}
+

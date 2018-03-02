@@ -1,0 +1,53 @@
+---
+
+
+- name: Update and Upgrade all packages
+  apt:
+    upgrade: dist
+    update_cache: yes
+  ignore_errors: yes
+
+
+
+- name: Install basic Packages
+  apt:
+    package: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items:
+    - git
+    - nano
+    - postgresql-client-common
+    - postgresql-client
+    - htop
+    - python-psycopg2
+    - libpq-dev
+    - python3-dev
+    - iotop
+    - ufw
+    - wicd-curses
+
+
+- name: Clean out files to save space on small devices
+  command: apt-get clean
+  #become: yes
+
+
+- name: "Create PiWS admin User: {{ piws_admin_user }}"
+  user:
+    name: "{{ piws_admin_user }}"
+    password: "{{ piws_admin_password }}"
+    groups: sudo, dialout
+    append: yes
+    shell: /bin/bash
+
+
+- name: Remove insecure pi user
+  user:
+    name: pi
+    state: absent
+    remove: yes
+
+
+...

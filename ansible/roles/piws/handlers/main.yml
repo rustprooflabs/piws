@@ -1,0 +1,10 @@
+---
+
+- name: "Restart PiWS service"
+  service:
+    name: "piws"
+    state: restarted
+
+
+
+...

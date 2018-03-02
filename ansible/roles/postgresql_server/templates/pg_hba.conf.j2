@@ -1,0 +1,9 @@
+# PostgreSQL Client Authentication Configuration File
+# ===================================================
+
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+local   all     postgres                peer
+local   all     all  md5
+hostssl replication     replicator      all            md5
+hostssl    all     all             all md5
