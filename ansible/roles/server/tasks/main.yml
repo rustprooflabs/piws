@@ -38,7 +38,7 @@
   user:
     name: "{{ piws_admin_user }}"
     password: "{{ piws_admin_password }}"
-    groups: sudo
+    groups: sudo, dialout
     append: yes
     shell: /bin/bash
 
