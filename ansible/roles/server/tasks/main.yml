@@ -23,6 +23,7 @@
     - htop
     - python-psycopg2
     - libpq-dev
+    - python3-dev
     - iotop
     - ufw
     - wicd-curses

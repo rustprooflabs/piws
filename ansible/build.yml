@@ -8,6 +8,7 @@
     - ufw
     - postgresql_server
     - sqitch
+    - pip
     - piws
 
 ...
