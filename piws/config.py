@@ -13,12 +13,7 @@ except KeyError:
 
 
 LOG_FORMAT = '%(levelname)s - %(asctime)s - %(name)s - %(message)s'
-
-try:
-    LOG_PATH = os.environ['LOG_PATH']
-except KeyError:
-    LOG_PATH = PROJECT_BASE_PATH + '/piws.log'
-
+LOG_PATH = '/var/log/piws/piws.log'
 
 LOGGER = logging.getLogger(__name__)
 

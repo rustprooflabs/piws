@@ -42,4 +42,84 @@
 
 
 
+
+
+- name: "Setup {{ python_version }} venv for running the site from requirements file: {{ repo_path  }}/requirements.txt "
+  pip:
+    virtualenv: "{{ venv_path }}"
+    virtualenv_python: "{{ python_version }}"
+    requirements: "{{ repo_path }}/requirements.txt"
+    state: present
+
+
+
+- name: "Remove old piws/ directory"
+  command: "rm -r {{ venv_path }}/bin/{{ item }}"
+  with_items:
+   - "piws/"
+  args:
+    chdir: "{{ repo_path }}"
+
+
+- name: "Copy files to venv/bin folder for server to run.  "
+  command: "cp -r {{ repo_path }}/{{ item }} {{ venv_path }}/bin/"
+  with_items:
+   - "run_station.py"
+   - "piws/"
+  args:
+    chdir: "{{ repo_path }}"
+
+
+- name: "Set piws as owner to directory"
+  file:
+    path: "{{ venv_path }}/bin"
+    recurse: yes
+    owner: "piws"
+    group: "piws"
+    mode: 0770
+
+
+- name: Ensure log directory exists
+  file:
+    path: /var/log/piws
+    state: directory
+    owner: piws
+    group: piws
+    mode: 0755
+
+
+- name: "Ensure log file exists and is owned by tyg_{{ account_name }}"
+  file:
+    path: /var/log/piws/piws.log
+    state: touch
+    owner: piws
+    group: piws
+    mode: 0640
+
+
+- name: "Setup Service (systemd) for piws"
+  template:
+    src: piws.service.j2
+    dest: "/etc/systemd/system/piws.service"
+    owner: piws
+    group: piws
+    mode: 0755
+
+
+- name: Setup EnvironmentFile for service and its secrets.
+  template:
+    src: piws.env.j2
+    dest: "{{ venv_path }}/bin/piws.env"
+    owner: "piws"
+    group: "piws"
+    mode: 0440
+
+
+- name: Enable service (systemctl)
+  command: "systemctl enable piws"
+  notify:
+    - "Restart PiWS service"
+
+
+
 ...

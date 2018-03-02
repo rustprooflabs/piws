@@ -1,13 +1,15 @@
 ---
 
 repo_url: https://github.com/rustprooflabs/piws.git
-repo_path: /srv/piws
 repo_branch: master
-ssh_path: /root/.ssh
+repo_path: /srv/piws
+venv_path: /srv/piws_venv
 
 piws_db_name: piws
 piws_db_user: piws
 piws_db_ip: 127.0.0.1
+
+python_version: 3.5
 
 
 ...

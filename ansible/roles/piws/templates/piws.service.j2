@@ -1,0 +1,14 @@
+[Unit]
+Description=Pi Weather Station (PiWS) Service
+After=network.target
+
+[Service]
+EnvironmentFile={{ venv_path }}/bin/piws.env
+Type=simple
+User=piws
+WorkingDirectory={{ venv_path }}/bin
+ExecStart={{ venv_path }}/bin/python run_station.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
