@@ -41,7 +41,10 @@
     chdir: "{{ repo_path }}/db"
 
 
-
+- name: Install virtualenv via pip
+  pip:
+    name: virtualenv
+    executable: pip3
 
 
 - name: "Setup {{ python_version }} venv for running the site from requirements file: {{ repo_path  }}/requirements.txt "
