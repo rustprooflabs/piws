@@ -57,11 +57,9 @@
 
 
 - name: "Remove old piws/ directory"
-  command: "rm -r {{ venv_path }}/bin/{{ item }}"
-  with_items:
-   - "piws/"
-  args:
-    chdir: "{{ repo_path }}"
+  file:
+    path: "{{ venv_path }}/bin/piws/"
+    state: absent
 
 
 - name: "Copy files to venv/bin folder for server to run.  "
@@ -91,7 +89,7 @@
     mode: 0755
 
 
-- name: "Ensure log file exists and is owned by tyg_{{ account_name }}"
+- name: "Ensure log file exists and is owned by piws"
   file:
     path: /var/log/piws/piws.log
     state: touch
