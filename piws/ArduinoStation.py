@@ -37,8 +37,9 @@ class ArduinoStation():
     def _setup_serial_connection(self):
         try:
             ser = Serial(port=port, baudrate=baudrate)
-        except SerialException:
-            sys.exit('Could not establish connection with weather sensors.')
+        except SerialException as e:
+            err_msg = 'Could not establish connection with weather sensors.\n{}'
+            sys.exit(err_msg.format(e))
         return ser
 
     def _add_observation(self, observation):

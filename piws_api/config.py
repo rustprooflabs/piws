@@ -1,10 +1,9 @@
-""" Configuration for Pi Weather Station (PiWS).
+"""" Configuration for Pi Weather Station (PiWS) service to send quarterhour data
+to API.
 """
 import os
 import logging
 
-CURR_PATH = os.path.abspath(os.path.dirname(__file__))
-PROJECT_BASE_PATH = os.path.abspath(os.path.join(CURR_PATH, os.pardir))
 
 try:
     APP_LOG_LEVEL = os.environ['APP_LOG_LEVEL']
@@ -12,9 +11,10 @@ except KeyError:
     APP_LOG_LEVEL = 'INFO'
 
 
+# Setup Logging
 LOGGER = logging.getLogger(__name__)
 LOG_FORMAT = '%(levelname)s - %(asctime)s - %(name)s - %(message)s'
-LOG_PATH = '/var/log/piws/piws.log'
+LOG_PATH = '/var/log/piws/piws_api.log'
 HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
 FORMATTER = logging.Formatter(LOG_FORMAT)
 HANDLER.setFormatter(FORMATTER)
@@ -40,17 +40,4 @@ except KeyError:
     DB_PORT = 5432
     msg = 'DB Port not set.  Defaulting to 5432'
     LOGGER.debug(msg)
-
-
-def get_db_string():
-    """ Builds the database connection string based on set parameters."""
-    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}'
-
-    return database_string.format(user=DB_USER, pw=DB_PW, host=DB_HOST,
-                                  port=DB_PORT, dbname=DB_NAME)
-
-
-DATABASE_STRING = get_db_string()
-
-
 

@@ -3,6 +3,6 @@
 - hosts: piws
 
   roles:
-    - piws
+    - piws_api
 
 ...
