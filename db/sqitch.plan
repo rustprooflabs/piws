@@ -4,3 +4,4 @@
 
 001 2018-02-28T16:04:59Z Ryan Lambert <ryan@rustprooflabs.com> # Initial PIWS objects.
 002 [001] 2018-02-28T16:37:14Z Ryan Lambert <ryan@rustprooflabs.com> # Adding indexes to FK columns
+003 2018-03-04T16:21:50Z ryanlambert <ryanlambert@ryan_pi_dev> # Updating views for sending to API

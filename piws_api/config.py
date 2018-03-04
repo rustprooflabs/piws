@@ -21,6 +21,7 @@ HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)
 LOGGER.setLevel(APP_LOG_LEVEL)
 
+LOGGER.debug('Logger configured.')
 
 try:
     DB_HOST, DB_NAME, DB_USER, DB_PW = (os.environ['DB_HOST'],
@@ -39,5 +40,15 @@ try:
 except KeyError:
     DB_PORT = 5432
     msg = 'DB Port not set.  Defaulting to 5432'
-    LOGGER.debug(msg)
+    LOGGER.info(msg)
 
+
+def get_db_string():
+    """ Builds the database connection string based on set parameters."""
+    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}'
+
+    return database_string.format(user=DB_USER, pw=DB_PW, host=DB_HOST,
+                                  port=DB_PORT, dbname=DB_NAME)
+
+
+DATABASE_STRING = get_db_string()
