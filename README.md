@@ -33,9 +33,10 @@ PiWS uses (Sqitch)[https://github.com/theory/sqitch]
 to deploy and manage the PostgreSQL database.
 
 
-### Deployment Instructions
+### Dev Deployment Instructions
 
-Setup connection to database using environment variables.
+To run the PiWS, setup connection to database using environment variables.
+
 
 ```bash
 source ~/venv/piws/bin/activate
@@ -47,6 +48,17 @@ export DB_PW=SecurePassword
 
 python run_station.py
 ```
+
+```bash
+export DB_HOST=127.0.0.1
+export DB_USER=piws
+export DB_NAME=piws
+export DB_PW=SecurePassword
+export API_HOST=http://127.0.0.1:5000
+export TYG_API_KEY=YourAPIKeyHere
+export TYG_SENSOR_ID=0
+```
+
 
 
 ## Licensing

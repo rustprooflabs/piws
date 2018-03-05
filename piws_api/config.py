@@ -2,8 +2,8 @@
 to API.
 """
 import os
+import sys
 import logging
-
 
 try:
     APP_LOG_LEVEL = os.environ['APP_LOG_LEVEL']
@@ -22,6 +22,14 @@ LOGGER.addHandler(HANDLER)
 LOGGER.setLevel(APP_LOG_LEVEL)
 
 LOGGER.debug('Logger configured.')
+
+
+try:
+    API_HOST = os.environ['API_HOST']
+except KeyError:
+    API_HOST = None
+    LOGGER.error('API_HOST environment variable must be set.')
+
 
 try:
     DB_HOST, DB_NAME, DB_USER, DB_PW = (os.environ['DB_HOST'],
@@ -52,3 +60,16 @@ def get_db_string():
 
 
 DATABASE_STRING = get_db_string()
+
+
+
+
+try:
+    TYG_API_KEY = os.environ['TYG_API_KEY']
+    TYG_SENSOR_ID = os.environ['TYG_SENSOR_ID']
+except KeyError:
+    TYG_API_KEY = None
+    TYG_SENSOR_ID = None
+    error_msg = 'TYG_API_KEY and TYG_SENSOR_ID must be set in order to send to the TYG API.'
+    LOGGER.error(error_msg)
+    sys.exit(error_msg)
