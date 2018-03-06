@@ -1,21 +1,18 @@
 """The ArduinoStation module collects data from serial port connected to
 Arduino weather station(s).
 """
-import sys
 import os
+import time
 import datetime
 import json
 from serial import Serial, SerialException
-from piws import db
+from piws import db, config
 
-
+LOGGER = config.LOGGER
 # Set TimeZone
 tzone = 'America/Denver'
 os.environ['TZ'] = tzone
 
-# Set Serial Connection parameters
-port = '/dev/ttyACM0'
-baudrate = 9600
 
 
 def convert_c_to_f(temp_c):
@@ -29,17 +26,39 @@ def convert_c_to_f(temp_c):
 
 
 class ArduinoStation():
-
     def __init__(self):
         super(ArduinoStation, self).__init__()
+
+        # Set Serial Connection parameters
+        self.serial_port_pattern = '/dev/ttyACM{port_num}'
+        self.serial_port_num = None
+        self.baudrate = 9600
         self.ser = self._setup_serial_connection()
+        self.lines_per_observation = 3 # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
 
     def _setup_serial_connection(self):
-        try:
-            ser = Serial(port=port, baudrate=baudrate)
-        except SerialException as e:
-            err_msg = 'Could not establish connection with weather sensors.\n{}'
-            sys.exit(err_msg.format(e))
+        """ Cycles through USB port numbers to attempt establishing connection to sensors."""
+        conn_set = False
+        serial_port_num = 0
+
+        while not conn_set:
+            try:
+                serial_port = self.serial_port_pattern.format(port_num=serial_port_num)
+                ser = Serial(port=serial_port, baudrate=self.baudrate)
+                self.serial_port_num = serial_port_num
+                conn_set = True
+            except SerialException:
+                msg = 'Could not establish connection with weather sensors on serial port %s.'
+                LOGGER.warning(msg, serial_port)
+                if serial_port_num < 4:
+                    serial_port_num += 1
+                else:
+                    serial_port_num = 0
+
+                time.sleep(1)
+
+        msg = 'Connection established on port %s'
+        LOGGER.info(msg, serial_port)
         return ser
 
     def _add_observation(self, observation):
@@ -68,35 +87,45 @@ class ArduinoStation():
 
     def collect_data(self):
 
-        lines = []
-        lines_per_observation = 3 # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
-        key_value_sep = ':'
+        self.lines = []
 
         while True:
-            line = self.ser.readline()
-
-            # Empty lines from serial always seems to have 2 spaces
-            if len(line) > 2:
-                lines.append(line)
-
-            if len(lines) >= lines_per_observation:
-                i = 0
-                observation = dict()
-
-                while i < lines_per_observation:
-                    l = lines.pop()
-                    l = l.decode('utf-8')
-                    l = l.split(key_value_sep)
-                    key = l[0]
-                    value = float(l[1].rstrip())
-                    observation[key] = value
-
-                    i += 1
-
-                self._add_observation(observation)
+            self._process_serial_data()
 
         ser.close()
 
 
-station = ArduinoStation()
-station.collect_data()
+    def _process_serial_data(self):
+        line = self.ser.readline()
+
+        # Empty lines from serial always seems to have 2 spaces
+        if len(line) > 2:
+            self.lines.append(line)
+
+        if len(self.lines) >= self.lines_per_observation:
+            observation = self._get_observation()
+            LOGGER.debug('Adding Observersion: %s', observation)
+            self._add_observation(observation)
+
+
+    def _get_observation(self):
+
+        key_value_sep = ':'
+        i = 0
+        observation = dict()
+
+        while i < self.lines_per_observation:
+            l = self.lines.pop()
+            l = l.decode('utf-8')
+            l = l.split(key_value_sep)
+            key = l[0]
+            try:
+                value = float(l[1].rstrip())
+            except IndexError:
+                msg = 'Error parsing observation.  This is OK if it occurs once or twice when starting up.'
+                LOGGER.warning(msg)
+            observation[key] = value
+            i += 1
+
+        return observation
+
