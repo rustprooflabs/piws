@@ -62,8 +62,6 @@ def get_db_string():
 DATABASE_STRING = get_db_string()
 
 
-
-
 try:
     TYG_API_KEY = os.environ['TYG_API_KEY']
     TYG_SENSOR_ID = os.environ['TYG_SENSOR_ID']
@@ -73,3 +71,6 @@ except KeyError:
     error_msg = 'TYG_API_KEY and TYG_SENSOR_ID must be set in order to send to the TYG API.'
     LOGGER.error(error_msg)
     sys.exit(error_msg)
+
+# Scales delay avoid abusing the API
+RUN_DELAY = 2.5
