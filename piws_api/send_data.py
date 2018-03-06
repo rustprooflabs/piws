@@ -1,3 +1,4 @@
+import sys
 import time
 import requests
 from piws_api import config, db
@@ -14,7 +15,12 @@ def run():
     LOGGER.info('%s new observations', len(observations))
 
     for observation in observations:
-        send_observation(observation)
+        observation = observation[0]
+        LOGGER.debug('Observation object type:  %s', type(observation))
+        status_code = send_observation(observation)
+        LOGGER.debug('API POST status code:  %s', status_code)
+        if status_code == 401:
+            sys.exit('API call returned Unauthroized.  Fix API Key and Sensor ID and try again.')
         time.sleep(run_delay)
 
 
@@ -33,10 +39,11 @@ def get_new_observations():
 
 
 def send_observation(observation):
+    observation['api_key'] = config.TYG_API_KEY
+    observation['sensor_id'] = config.TYG_SENSOR_ID
     LOGGER.debug('Observation: %s', observation)
     url = '{api_host}/sensor/readings/'.format(api_host=config.API_HOST)
     method = 'POST'
     response = requests.request(method=method, url=url, json=observation)
-    LOGGER.debug(response)
-    LOGGER.debug(response.status_code)
+    return response.status_code
 
