@@ -15,6 +15,30 @@ os.environ['TZ'] = tzone
 
 
 
+def add_observation(observation):
+    """ Builds observation and sends to PostgreSQL function."""
+    tstamp = datetime.datetime.today()
+    obs_date = tstamp.date()
+    obs_date_sql = '{year}-{month}-{day}'
+    obs_date_sql = obs_date_sql.format(year=obs_date.year,
+                                       month=obs_date.month,
+                                       day=obs_date.day)
+
+    obs_time = tstamp.time()
+    obs_time_sql = '{hour}:{minute}:{second}'
+    obs_time_sql = obs_time_sql.format(hour=obs_time.hour,
+                                       minute=obs_time.minute,
+                                       second=obs_time.second)
+
+    sql_raw = 'SELECT * FROM piws.insert_observation(%s::INT, %s::DATE, '
+    sql_raw += '%s::TIME,  %s::TEXT, %s::JSONB) '
+    params = [1,
+              obs_date_sql,
+              obs_time_sql,
+              tzone,
+              json.dumps(observation, ensure_ascii=False)]
+    db.insert(sql_raw, params)
+
 def convert_c_to_f(temp_c):
     """Converts temp (C) to temp (F)."""
     try:
@@ -27,17 +51,22 @@ def convert_c_to_f(temp_c):
 
 class ArduinoStation():
     def __init__(self):
+        """ Setup ArudinoStation object, including Serial data connection."""
+        # FIXME:  IS this needed?
         super(ArduinoStation, self).__init__()
 
-        # Set Serial Connection parameters
         self.serial_port_pattern = '/dev/ttyACM{port_num}'
         self.serial_port_num = None
         self.baudrate = 9600
         self.ser = self._setup_serial_connection()
-        self.lines_per_observation = 3 # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
+
+        # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
+        self.lines_per_observation = 3
 
     def _setup_serial_connection(self):
-        """ Cycles through USB port numbers to attempt establishing connection to sensors."""
+        """ Cycles through USB port numbers to attempt establishing connection
+        to sensors.
+        """
         conn_set = False
         serial_port_num = 0
 
@@ -61,38 +90,14 @@ class ArduinoStation():
         LOGGER.info(msg, serial_port)
         return ser
 
-    def _add_observation(self, observation):
-        tstamp = datetime.datetime.today()
-        obs_date = tstamp.date()
-        obs_date_sql = '{year}-{month}-{day}'
-        obs_date_sql = obs_date_sql.format(year=obs_date.year,
-                                           month=obs_date.month,
-                                           day=obs_date.day)
-
-        obs_time = tstamp.time()
-        obs_time_sql = '{hour}:{minute}:{second}'
-        obs_time_sql = obs_time_sql.format(hour=obs_time.hour,
-                                           minute=obs_time.minute,
-                                           second=obs_time.second)
-
-        sql_raw = 'SELECT * FROM piws.insert_observation(%s::INT, %s::DATE, '
-        sql_raw += '%s::TIME,  %s::TEXT, %s::JSONB) '
-        params = [1,
-                  obs_date_sql,
-                  obs_time_sql,
-                  tzone,
-                  json.dumps(observation, ensure_ascii=False)]
-        db.insert(sql_raw, params)
-
-
     def collect_data(self):
-
+        """ Sets up lines list and loops to collect serial data and add
+        observations.
+        """
         self.lines = []
 
         while True:
             self._process_serial_data()
-
-        ser.close()
 
 
     def _process_serial_data(self):
@@ -105,27 +110,26 @@ class ArduinoStation():
         if len(self.lines) >= self.lines_per_observation:
             observation = self._get_observation()
             LOGGER.debug('Adding Observersion: %s', observation)
-            self._add_observation(observation)
-
+            add_observation(observation)
 
     def _get_observation(self):
-
+        """Pulls sensor readings, stuffs into dict."""
         key_value_sep = ':'
         i = 0
         observation = dict()
 
         while i < self.lines_per_observation:
-            l = self.lines.pop()
-            l = l.decode('utf-8')
-            l = l.split(key_value_sep)
-            key = l[0]
+            line = self.lines.pop()
+            line = line.decode('utf-8')
+            line = line.split(key_value_sep)
+            key = line[0]
             try:
-                value = float(l[1].rstrip())
+                value = float(line[1].rstrip())
             except IndexError:
-                msg = 'Error parsing observation.  This is OK if it occurs once or twice when starting up.'
+                msg = 'Error parsing observation. '
+                msg += 'This is OK once or twice when starting up.'
                 LOGGER.warning(msg)
             observation[key] = value
             i += 1
 
         return observation
-

@@ -18,6 +18,7 @@ def run():
 
 
 def process_observations():
+    """ Loops through any pending observations and submits to API."""
     observations = get_new_observations()
     LOGGER.info('%s new observations', len(observations))
 
@@ -29,7 +30,9 @@ def process_observations():
         if status_code == 201:
             observation_submitted(observation['end_15min'])
         elif status_code == 401:
-            sys.exit('API call returned Unauthroized.  Fix API Key and Sensor ID and try again.')
+            error_msg = 'API call returned Unauthroized. '
+            error_msg += 'Fix API Key and Sensor ID and try again.'
+            sys.exit(error_msg)
         else:
             LOGGER.warning('Unhandled HTTP status code: %s', status_code)
         time.sleep(config.RUN_DELAY)
@@ -46,6 +49,7 @@ def get_new_observations():
 
 
 def send_observation(observation):
+    """Sends sensor observation to TYG API in JSON format."""
     observation['api_key'] = config.TYG_API_KEY
     observation['sensor_id'] = config.TYG_SENSOR_ID
     LOGGER.debug('Observation: %s', observation)
@@ -56,8 +60,8 @@ def send_observation(observation):
     return response.status_code
 
 def observation_submitted(end_15min):
+    """Marks the quarter-hour observation as submitted in the PiWS database."""
     sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ)"
     params = [end_15min]
     results = db.insert(sql_raw, params)
     LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
-

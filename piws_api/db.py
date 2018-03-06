@@ -41,6 +41,3 @@ def _execute_query(sql_raw, params, qry_type):
 
     conn.close()
     return results
-
-
-
