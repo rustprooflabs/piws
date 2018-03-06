@@ -38,7 +38,7 @@ BEGIN;
     LANGUAGE 'sql'
     VOLATILE SECURITY DEFINER
     ROWS 10
-    SET search_path='ui, pg_temp'
+    SET search_path='piws, pg_temp'
 
     AS $body$
 

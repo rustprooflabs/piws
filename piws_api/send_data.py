@@ -19,8 +19,12 @@ def run():
         LOGGER.debug('Observation object type:  %s', type(observation))
         status_code = send_observation(observation)
         LOGGER.debug('API POST status code:  %s', status_code)
-        if status_code == 401:
+        if status_code == 201:
+            obsrvation_submitted(observation['end_15min'])
+        elif status_code == 401:
             sys.exit('API call returned Unauthroized.  Fix API Key and Sensor ID and try again.')
+        else:
+            LOGGER.warning('Unhandled HTTP status code: %s', status_code)
         time.sleep(run_delay)
 
 
@@ -46,4 +50,10 @@ def send_observation(observation):
     method = 'POST'
     response = requests.request(method=method, url=url, json=observation)
     return response.status_code
+
+def obsrvation_submitted(end_15min):
+    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ)"
+    params = [end_15min]
+    results = db.insert(sql_raw, params)
+    LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
 
