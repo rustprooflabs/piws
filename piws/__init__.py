@@ -1,1 +1,1 @@
-from piws import db, ArduinoStation
+from piws import config, ArduinoStation

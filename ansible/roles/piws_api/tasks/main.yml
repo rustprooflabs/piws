@@ -1,0 +1,21 @@
+---
+
+
+- name: Ensure log directory exists
+  file:
+    path: /var/log/piws
+    state: directory
+    owner: piws
+    group: piws
+    mode: 0775
+
+
+- name: "Ensure log file exists and is owned by piws"
+  file:
+    path: /var/log/piws/piws_api.log
+    state: touch
+    owner: piws
+    group: piws
+    mode: 0660
+
+...

@@ -86,7 +86,7 @@
     state: directory
     owner: piws
     group: piws
-    mode: 0755
+    mode: 0775
 
 
 - name: "Ensure log file exists and is owned by piws"
@@ -95,7 +95,7 @@
     state: touch
     owner: piws
     group: piws
-    mode: 0640
+    mode: 0660
 
 
 - name: "Setup Service (systemd) for piws"
@@ -104,7 +104,7 @@
     dest: "/etc/systemd/system/piws.service"
     owner: piws
     group: piws
-    mode: 0755
+    mode: 0775
 
 
 - name: Setup EnvironmentFile for service and its secrets.
