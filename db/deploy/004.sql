@@ -78,17 +78,15 @@ CREATE OR REPLACE FUNCTION piws.quarterhour_json(
 	)
     RETURNS TABLE(observation_data json)
     LANGUAGE 'sql'
-
-    COST 100
     VOLATILE SECURITY DEFINER
     ROWS 10
-    SET search_path='"ui, pg_temp"'
+    SET search_path='piws, pg_temp'
 AS $BODY$
 
         SELECT row_to_json(r)
             FROM (SELECT *
                     FROM piws.vQuarterHourSummary
-                    WHERE now() > end_15min
+                    WHERE now() > end_15min + (interval '1 minute')
                         AND submitted_to_api = 0
                     ORDER BY datum ASC, quarterhour ASC
                     LIMIT 10

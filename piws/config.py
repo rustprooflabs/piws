@@ -24,14 +24,17 @@ LOGGER.setLevel(APP_LOG_LEVEL)
 
 try:
     DB_HOST, DB_NAME, DB_USER, DB_PW = (os.environ['DB_HOST'],
-                                        os.environ['DB_NAME'], os.environ['DB_USER'],
+                                        os.environ['DB_NAME'],
+                                        os.environ['DB_USER'],
                                         os.environ['DB_PW'])
     DB_CONN_AVAILABLE = True
 except KeyError:
-    key_msg = ('Database environment variables not set.  All values are required for proper operation.\n'
-               'DB_HOST\nDB_NAME\nDB_USER\nDB_PW\n')
+    key_msg = 'Database environment variables not set. '
+    key_msg += 'All values are required for proper operation.\n'
+    key_msg += 'DB_HOST\nDB_NAME\nDB_USER\nDB_PW\n'
     LOGGER.error(key_msg)
-    DB_HOST, DB_NAME, DB_USER, DB_PW = ('127.0.0.1', 'NotSet', 'Invalid', 'Invalid')
+    DB_HOST, DB_NAME, DB_USER, DB_PW = ('127.0.0.1', 'NotSet',
+                                        'Invalid', 'Invalid')
 
 
 try:
@@ -51,4 +54,3 @@ def get_db_string():
 
 
 DATABASE_STRING = get_db_string()
-

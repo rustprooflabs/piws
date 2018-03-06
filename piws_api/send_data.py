@@ -9,8 +9,16 @@ def run():
     """Control module to run the program to check for new observations to
     send to API.
     """
-    run_delay = 1.0
     LOGGER.info('Running PiWS API (send_data.run()')
+    while True:
+        process_observations()
+        loop_delay = 15 + (config.RUN_DELAY * 5)
+        LOGGER.debug('Sleeping %s seconds between loops.', loop_delay)
+        time.sleep(loop_delay)
+
+
+def process_observations():
+    """ Loops through any pending observations and submits to API."""
     observations = get_new_observations()
     LOGGER.info('%s new observations', len(observations))
 
@@ -20,17 +28,15 @@ def run():
         status_code = send_observation(observation)
         LOGGER.debug('API POST status code:  %s', status_code)
         if status_code == 201:
-            obsrvation_submitted(observation['end_15min'])
+            observation_submitted(observation['end_15min'])
         elif status_code == 401:
-            sys.exit('API call returned Unauthroized.  Fix API Key and Sensor ID and try again.')
+            error_msg = 'API call returned Unauthroized. '
+            error_msg += 'Fix API Key and Sensor ID and try again.'
+            sys.exit(error_msg)
         else:
             LOGGER.warning('Unhandled HTTP status code: %s', status_code)
-        time.sleep(run_delay)
+        time.sleep(config.RUN_DELAY)
 
-
-    # Grab in groups of 10
-    ##   Send to API one at a time, pause 2 seconds between sends
-    ##   At end of group, pause 10 seconds before grabbing next group of 10
 
 def get_new_observations():
     """Retrieves new observations from database using specific function.
@@ -43,17 +49,19 @@ def get_new_observations():
 
 
 def send_observation(observation):
+    """Sends sensor observation to TYG API in JSON format."""
     observation['api_key'] = config.TYG_API_KEY
     observation['sensor_id'] = config.TYG_SENSOR_ID
     LOGGER.debug('Observation: %s', observation)
     url = '{api_host}/sensor/readings/'.format(api_host=config.API_HOST)
     method = 'POST'
     response = requests.request(method=method, url=url, json=observation)
+    LOGGER.debug('Request response %s', response)
     return response.status_code
 
-def obsrvation_submitted(end_15min):
+def observation_submitted(end_15min):
+    """Marks the quarter-hour observation as submitted in the PiWS database."""
     sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ)"
     params = [end_15min]
     results = db.insert(sql_raw, params)
     LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
-
