@@ -10,5 +10,6 @@
     - sqitch
     - pip
     - piws
+    - piws_api
 
 ...
