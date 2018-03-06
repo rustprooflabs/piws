@@ -1,0 +1,14 @@
+[Unit]
+Description=Pi Weather Station (PiWS) TYG API Service
+After=network.target
+
+[Service]
+EnvironmentFile={{ venv_path }}/bin/piws_api.env
+Type=simple
+User=piws
+WorkingDirectory={{ venv_path }}/bin
+ExecStart={{ venv_path }}/bin/python send_to_api.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
