@@ -7,7 +7,7 @@ EnvironmentFile={{ venv_path }}/bin/piws_api.env
 Type=simple
 User=piws
 WorkingDirectory={{ venv_path }}/bin
-ExecStart={{ venv_path }}/bin/python send_to_api.py
+ExecStart={{ venv_path }}/bin/python send_data.py
 Restart=on-abort
 
 [Install]
