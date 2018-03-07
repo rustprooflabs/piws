@@ -65,7 +65,7 @@
 - name: "Copy files to venv/bin folder for server to run.  "
   command: "cp -r {{ repo_path }}/{{ item }} {{ venv_path }}/bin/"
   with_items:
-   - "send_data.py"
+   - "send_to_api.py"
    - "piws_api/"
   args:
     chdir: "{{ repo_path }}"
