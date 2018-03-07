@@ -57,6 +57,8 @@ export DB_PW=SecurePassword
 export API_HOST=http://127.0.0.1:5000
 export TYG_API_KEY=YourAPIKeyHere
 export TYG_SENSOR_ID=0
+
+python send_to_api.py
 ```
 
 
