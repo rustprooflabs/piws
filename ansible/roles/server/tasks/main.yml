@@ -27,6 +27,7 @@
     - iotop
     - ufw
     - wicd-curses
+    - policykit-1
 
 
 - name: Clean out files to save space on small devices

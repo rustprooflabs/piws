@@ -38,11 +38,28 @@
     executable: pip
 
 
+- name: Ensure venv directory exists
+  file:
+    path: "{{ venv_path }}"
+    state: directory
+    owner: piws
+    group: piws
+    mode: 0775
+
+
 
 - name: "Remove old piws_api/ directory"
   file:
     path: "{{ venv_path }}/bin/piws_api/"
     state: absent
+
+
+- name: "Setup {{ python_version }} venv for running the site from requirements file: {{ repo_path  }}/requirements.txt "
+  pip:
+    virtualenv: "{{ venv_path }}"
+    virtualenv_python: "{{ python_version }}"
+    requirements: "{{ repo_path }}/requirements.txt"
+    state: present
 
 
 - name: "Copy files to venv/bin folder for server to run.  "
@@ -53,12 +70,6 @@
   args:
     chdir: "{{ repo_path }}"
 
-- name: "Setup {{ python_version }} venv for running the site from requirements file: {{ repo_path  }}/requirements.txt "
-  pip:
-    virtualenv: "{{ venv_path }}"
-    virtualenv_python: "{{ python_version }}"
-    requirements: "{{ repo_path }}/requirements.txt"
-    state: present
 
 
 - name: "Set piws as owner to directory"
