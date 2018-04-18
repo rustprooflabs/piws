@@ -61,7 +61,13 @@ export TYG_SENSOR_ID=0
 python send_to_api.py
 ```
 
+### Manual Database deployments
 
+For testing purposes:
+
+```bash
+sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
+```
 
 ## Licensing
 
