@@ -4,4 +4,5 @@ BEGIN;
 
     DROP TABLE piws.observation_minute;
 
+    DROP FUNCTION piws.load_minute_observations();
 COMMIT;
