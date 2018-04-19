@@ -101,9 +101,54 @@ BEGIN;
             ;
 
 
+            -----------------------------------------
+            -----------------------------------------
+            -----------------------------------------
 
-            SELECT True;
+        WITH minute_obs AS (
+            SELECT DISTINCT m.sensor_id, c.calendar_id, to_char(t.timeofday, 'HH24:MI') AS hhmm, t.hour, t.minute
+                FROM piws.observation_minute m
+                INNER JOIN public.time t ON m.time_id = t.time_id
+                INNER JOIN public.calendar c ON m.calendar_id = c.calendar_id
+        ), not_imported AS (
+            -- NOW to convert this to a format matching the above
+            SELECT o.observation_id, c.calendar_id, to_char(t.timeofday, 'HH24:MI') AS hhmm, t.hour, t.minute
+                FROM piws.observation o
+                INNER JOIN public.time t ON o.time_id = t.time_id
+                INNER JOIN public.calendar c ON o.calendar_id = c.calendar_id
+                WHERE imported = False
+        )
+        UPDATE piws.observation AS o
+            SET imported = True
+            FROM  not_imported n
+            INNER JOIN minute_obs m ON m.calendar_id = n.calendar_id AND m.hhmm = n.hhmm
+            WHERE o.observation_id = n.observation_id
+            ;
+
+
+        SELECT True;
         $BODY$;
 
+
+
+
+    CREATE OR REPLACE FUNCTION piws.insert_observation(sensor_id integer, obs_date date, obs_time time without time zone, tzone text, sensor_values jsonb)
+         RETURNS integer
+         LANGUAGE sql
+         SECURITY DEFINER
+         SET search_path TO piws, pg_temp
+        AS $function$
+
+            SELECT * FROM piws.load_minute_observations();
+
+            INSERT INTO piws.observation (sensor_id, calendar_id, time_id, timezone, sensor_values)
+                SELECT sensor_id, c.calendar_id, t.time_id, tzone, sensor_values
+                FROM public.calendar c
+                INNER JOIN public.time t ON t.timeofday = obs_time
+                WHERE c.datum = obs_date
+
+                RETURNING observation_id
+
+        $function$;
 
 COMMIT;
