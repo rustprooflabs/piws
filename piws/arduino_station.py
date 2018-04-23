@@ -9,7 +9,7 @@ from serial import Serial, SerialException
 from piws import db, config
 
 LOGGER = config.LOGGER
-# Set TimeZone
+# FIXME:  Set TimeZone in config, not here!
 tzone = 'America/Denver'
 os.environ['TZ'] = tzone
 
