@@ -58,7 +58,7 @@ BEGIN;
                         AND (c.datum != (NOW() AT TIME ZONE o.timezone)::DATE
                             OR ( -- or today, but not *this* minute
                                 c.datum = (NOW() AT TIME ZONE o.timezone)::DATE
-                                    AND to_char(t.timeofday, 'HH24:MI') <> to_char(NOW() AT TIME ZONE o.timezone, 'HH24:MI')
+                                    AND to_char(t.timeofday  + '2 minutes'::interval, 'HH24:MI') < to_char(NOW() AT TIME ZONE o.timezone, 'HH24:MI')
                             )
                         )
 
@@ -97,7 +97,7 @@ BEGIN;
             SELECT a.sensor_id, a.calendar_id, t.time_id, a.sensor_name, a.sensor_value
                 FROM minute_aggs a
                 INNER JOIN public.time t ON a.hhmm = to_char(t.timeofday, 'HH24:MI') AND t.second = 0
-                ORDER BY to_char(t.timeofday, 'HH24:MI') DESC
+
             ;
 
 
@@ -128,6 +128,7 @@ BEGIN;
 
         SELECT True;
         $BODY$;
+
 
 
 
