@@ -4,6 +4,7 @@
   service:
     name: sshd
     state: restarted
+  ignore_errors: yes
 
 
 ...
