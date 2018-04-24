@@ -23,5 +23,6 @@
   ufw:
     state: enabled
     policy: deny
+  ignore_errors: yes
 
 ...
