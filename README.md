@@ -50,6 +50,7 @@ python run_station.py
 ```
 
 ```bash
+source ~/venv/piws/bin/activate
 export DB_HOST=127.0.0.1
 export DB_USER=piws
 export DB_NAME=piws
