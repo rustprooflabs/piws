@@ -209,4 +209,26 @@ BEGIN;
         ;
 
 
+
+
+
+DROP FUNCTION piws.mark_quarterhour_submitted(timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION piws.mark_quarterhour_submitted(
+    end_15min timestamp with time zone,
+    sensor_name TEXT
+    )
+ RETURNS integer
+ LANGUAGE sql
+ SECURITY DEFINER
+ SET search_path TO 'piws, pg_temp'
+AS $function$
+        INSERT INTO piws.api_quarterhour_submitted(end_15min, sensor_name)
+            VALUES (end_15min, sensor_name)
+        RETURNING api_quarterhour_submitted_id
+
+    $function$
+;
+
+
 COMMIT;

@@ -63,8 +63,8 @@ def send_observation(observation):
 
 def observation_submitted(end_15min, sensor_name):
     """Marks the quarter-hour observation as submitted in the PiWS database."""
-    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ)"
-    params = [end_15min]
+    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ, %s::sensor_name)"
+    params = [end_15min, sensor_name]
     results = db.insert(sql_raw, params)
     LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
 
