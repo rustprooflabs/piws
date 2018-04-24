@@ -161,6 +161,26 @@ BEGIN;
 ------------------------------------------------
 ------------------------------------------------
 ------------------------------------------------
+
+    ALTER TABLE piws.api_quarterhour_submitted ADD sensor_name TEXT;
+
+    UPDATE piws.api_quarterhour_submitted
+        SET sensor_name = ''
+        WHERE sensor_name IS NULL;
+
+    ALTER TABLE piws.api_quarterhour_submitted
+        ALTER COLUMN sensor_name
+        SET NOT NULL;
+
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD CONSTRAINT UQ_piws_api_quarterhour_submitted_end_15min_sensor_name
+        UNIQUE (end_15min, sensor_name);
+
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+
+
     DROP VIEW piws.vQuarterHourSummary;
 
 
@@ -184,6 +204,7 @@ BEGIN;
         FROM values v
         LEFT JOIN piws.api_quarterhour_submitted aqs
             ON v.end_15min = aqs.end_15min
+                AND v.sensor_name = aqs.sensor_name
         ORDER BY datum DESC, quarterhour DESC
         ;
 

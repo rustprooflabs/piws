@@ -10,6 +10,8 @@ BEGIN;
 
     ALTER TABLE piws.observation DROP COLUMN imported;
 
+    ALTER TABLE piws.api_quarterhour_submitted DROP COLUMN sensor_name;
+
 
     CREATE OR REPLACE FUNCTION piws.insert_observation(sensor_id integer, obs_date date, obs_time time without time zone, tzone text, sensor_values jsonb)
          RETURNS integer
