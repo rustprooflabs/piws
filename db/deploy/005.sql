@@ -183,7 +183,7 @@ BEGIN;
             END AS submitted_to_api
         FROM values v
         LEFT JOIN piws.api_quarterhour_submitted aqs
-            ON (((v.end_15min || ' '::text) || v.timezone)::timestamp with time zone) = aqs.end_15min
+            ON v.end_15min = aqs.end_15min
         ORDER BY datum DESC, quarterhour DESC
         ;
 
