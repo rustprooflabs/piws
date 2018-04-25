@@ -161,6 +161,26 @@ BEGIN;
 ------------------------------------------------
 ------------------------------------------------
 ------------------------------------------------
+
+    ALTER TABLE piws.api_quarterhour_submitted ADD sensor_name TEXT;
+
+    UPDATE piws.api_quarterhour_submitted
+        SET sensor_name = ''
+        WHERE sensor_name IS NULL;
+
+    ALTER TABLE piws.api_quarterhour_submitted
+        ALTER COLUMN sensor_name
+        SET NOT NULL;
+
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD CONSTRAINT UQ_piws_api_quarterhour_submitted_end_15min_sensor_name
+        UNIQUE (end_15min, sensor_name);
+
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
+
+
     DROP VIEW piws.vQuarterHourSummary;
 
 
@@ -183,9 +203,32 @@ BEGIN;
             END AS submitted_to_api
         FROM values v
         LEFT JOIN piws.api_quarterhour_submitted aqs
-            ON (((v.end_15min || ' '::text) || v.timezone)::timestamp with time zone) = aqs.end_15min
+            ON v.end_15min = aqs.end_15min
+                AND v.sensor_name = aqs.sensor_name
         ORDER BY datum DESC, quarterhour DESC
         ;
+
+
+
+
+
+DROP FUNCTION piws.mark_quarterhour_submitted(timestamp with time zone);
+
+CREATE OR REPLACE FUNCTION piws.mark_quarterhour_submitted(
+    end_15min timestamp with time zone,
+    sensor_name TEXT
+    )
+ RETURNS integer
+ LANGUAGE sql
+ SECURITY DEFINER
+ SET search_path TO 'piws, pg_temp'
+AS $function$
+        INSERT INTO piws.api_quarterhour_submitted(end_15min, sensor_name)
+            VALUES (end_15min, sensor_name)
+        RETURNING api_quarterhour_submitted_id
+
+    $function$
+;
 
 
 COMMIT;

@@ -10,6 +10,8 @@ BEGIN;
 
     ALTER TABLE piws.observation DROP COLUMN imported;
 
+    ALTER TABLE piws.api_quarterhour_submitted DROP COLUMN sensor_name;
+
 
     CREATE OR REPLACE FUNCTION piws.insert_observation(sensor_id integer, obs_date date, obs_time time without time zone, tzone text, sensor_values jsonb)
          RETURNS integer
@@ -72,6 +74,25 @@ BEGIN;
                 ELSE 0
             END)
       ORDER BY sv.datum, sv.hour, sv.quarterhour;
+
+
+
+DROP FUNCTION piws.mark_quarterhour_submitted(timestamp with time zone, text);
+
+CREATE OR REPLACE FUNCTION piws.mark_quarterhour_submitted(end_15min timestamp with time zone)
+ RETURNS integer
+ LANGUAGE sql
+ SECURITY DEFINER
+ SET search_path TO "piws, pg_temp"
+AS $function$
+        INSERT INTO piws.api_quarterhour_submitted(end_15min)
+            VALUES (end_15min)
+        RETURNING api_quarterhour_submitted_id
+
+    $function$
+;
+
+
 
 
 COMMIT;

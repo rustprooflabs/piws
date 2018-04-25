@@ -10,7 +10,7 @@ SELECT observation_id, sensor_id, calendar_id, time_id, timezone, sensor_values
 ;
 
 
-SELECT datum, hour, quarterhour, observation_cnt
+SELECT datum, hour, quarterhour
     FROM piws.vQuarterHourSummary
     WHERE FALSE;
 
