@@ -41,12 +41,16 @@ To run the PiWS, setup connection to database using environment variables.
 ```bash
 source ~/venv/piws/bin/activate
 
+cd ~/git/piws
+
 export DB_HOST=127.0.0.1
 export DB_USER=piws
 export DB_NAME=piws
 export DB_PW=SecurePassword
+export APP_LOG_LEVEL=DEBUG
 
 python run_station.py
+
 ```
 
 ```bash
