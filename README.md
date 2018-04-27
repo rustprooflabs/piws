@@ -18,7 +18,12 @@ PiWS services.
 * Git
 * Arudino Temperature Control Library (Dallas Temperature)
 * DHT library
+* PostgreSQL 9.5 +
 
+### Will you support older version of PostgreSQL than 9.5?
+
+No.  The data loading code uses `ON CONFLICT` and requires PostgreSQL 9.5 or
+later.
 
 ## Setting Up
 
