@@ -5,6 +5,7 @@ from piws_api import config, db
 
 LOGGER = config.LOGGER
 
+
 def run():
     """Control module to run the program to check for new observations to
     send to API.
@@ -20,7 +21,11 @@ def run():
 def process_observations():
     """ Loops through any pending observations and submits to API."""
     observations = get_new_observations()
-    LOGGER.info('%s new observations', len(observations))
+    observation_count = len(observations)
+    if observation_count > 0:
+        LOGGER.info('%s new observations', observation_count)
+    else:
+        LOGGER.debug('0 new observations')
 
     for observation in observations:
         observation = observation[0]
