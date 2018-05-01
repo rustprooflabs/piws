@@ -70,6 +70,11 @@ class ArduinoStation():
         conn_set = False
         serial_port_num = 0
 
+        attempts = 0
+        delay = 5
+
+        LOGGER.info('Attempting to esablish connection with sensors...')
+
         while not conn_set:
             try:
                 serial_port = self.serial_port_pattern.format(port_num=serial_port_num)
@@ -77,14 +82,18 @@ class ArduinoStation():
                 self.serial_port_num = serial_port_num
                 conn_set = True
             except SerialException:
-                msg = 'Could not establish connection with weather sensors on serial port %s.'
-                LOGGER.warning(msg, serial_port)
-                if serial_port_num < 4:
+                attempts += 1
+                msg = 'Could not establish connection w/ SCB via serial port %s. '
+                msg += 'Attempts: %s'
+
+                LOGGER.debug(msg, serial_port, attempts)
+
+                if serial_port_num < 2:
                     serial_port_num += 1
                 else:
                     serial_port_num = 0
 
-                time.sleep(1)
+                time.sleep(delay)
 
         msg = 'Connection established on port %s'
         LOGGER.info(msg, serial_port)
