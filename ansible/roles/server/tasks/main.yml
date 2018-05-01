@@ -56,7 +56,7 @@
     name: "reboot pi"
     minute: 37
     hour: 5
-    job: "reboot"
+    job: "/sbin/shutdown -r now"
     state: present
 
 
