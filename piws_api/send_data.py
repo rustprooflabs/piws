@@ -10,7 +10,7 @@ def run():
     """Control module to run the program to check for new observations to
     send to API.
     """
-    LOGGER.info('Running PiWS API (send_data.run()')
+    LOGGER.info('Running PiWS API ( `send_data.run()` )')
     while True:
         process_observations()
         loop_delay = 15 + (config.RUN_DELAY * 5)
