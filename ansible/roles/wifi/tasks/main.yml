@@ -6,7 +6,7 @@
     dest: "/root/wifi_powermgmt.sh"
     owner: piws
     group: piws
-    mode: 0660
+    mode: 0770
 
 - name: "Setup Service (systemd) for piws"
   template:
@@ -14,7 +14,7 @@
     dest: "/etc/systemd/system/disable_wifi_power_management.service"
     owner: piws
     group: piws
-    mode: 0664
+    mode: 0775
 
 
 - name: Enable service (systemctl)
