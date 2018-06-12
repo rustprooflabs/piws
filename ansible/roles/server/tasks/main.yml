@@ -8,7 +8,6 @@
   ignore_errors: yes
 
 
-
 - name: Install basic Packages
   apt:
     package: "{{ item }}"
@@ -26,7 +25,6 @@
     - python3-dev
     - iotop
     - ufw
-    - wicd-curses
     - policykit-1
 
 
