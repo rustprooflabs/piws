@@ -1,0 +1,24 @@
+---
+
+- name: "Copy script to disable WiFi power management on Raspberry Pi"
+  template:
+    src: wifi_powermgmt.sh.j2
+    dest: "/root/wifi_powermgmt.sh"
+    owner: piws
+    group: piws
+    mode: 0660
+
+- name: "Setup Service (systemd) for piws"
+  template:
+    src: disable_wifi_power_management.service.j2
+    dest: "/etc/systemd/system/disable_wifi_power_management.service"
+    owner: piws
+    group: piws
+    mode: 0664
+
+
+- name: Enable service (systemctl)
+  command: "systemctl enable disable_wifi_power_management"
+
+
+...

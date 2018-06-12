@@ -104,7 +104,7 @@
     dest: "/etc/systemd/system/piws.service"
     owner: piws
     group: piws
-    mode: 0775
+    mode: 0664
 
 
 - name: Setup EnvironmentFile for service and its secrets.

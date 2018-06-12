@@ -1,0 +1,10 @@
+[Unit]
+Description=Pi Custom Script to Disable WiFi power management
+After=multi-user.target
+ 
+[Service]
+Type=idle
+ExecStart=/root/wifi_powermgmt.sh
+ 
+[Install]
+WantedBy=multi-user.target
