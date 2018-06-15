@@ -12,7 +12,10 @@ def run():
     """
     LOGGER.info('Running PiWS API ( `send_data.run()` )')
     while True:
-        process_observations()
+        try:
+            process_observations()
+        except Exception as e:
+            LOGGER.error('There was an unhandled error while running.  %s', e)
         loop_delay = 15 + (config.RUN_DELAY * 5)
         LOGGER.debug('Sleeping %s seconds between loops.', loop_delay)
         time.sleep(loop_delay)
@@ -39,6 +42,12 @@ def process_observations():
             error_msg = 'API call returned Unauthroized. '
             error_msg += 'Fix API Key and Sensor ID and try again.'
             sys.exit(error_msg)
+        elif status_code == 404:
+            error_msg = 'API URL not found.  Please check PiWS configuration and your internet connection.'
+            LOGGER.warning(error_msg)
+            extra_delay = config.RUN_DELAY * 10
+            LOGGER.info('Delaying an extra %s seconds...', extra_delay)
+            time.sleep(extra_delay)
         else:
             LOGGER.warning('Unhandled HTTP status code: %s', status_code)
         time.sleep(config.RUN_DELAY)
@@ -61,7 +70,12 @@ def send_observation(observation):
     LOGGER.debug('Observation: %s', observation)
     url = '{api_host}/sensor/readings/'.format(api_host=config.API_HOST)
     method = 'POST'
-    response = requests.request(method=method, url=url, json=observation)
+    try:
+        response = requests.request(method=method, url=url, json=observation)
+    except requests.exceptions.ConnectionError as e:
+        LOGGER.error('API HTTP request error. URL.  %s', url)
+        return 404
+
     LOGGER.debug('Request response %s', response)
     return response.status_code
 
