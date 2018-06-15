@@ -45,6 +45,9 @@ def process_observations():
         elif status_code == 404:
             error_msg = 'API URL not found.  Please check PiWS configuration and your internet connection.'
             LOGGER.warning(error_msg)
+            extra_delay = config.RUN_DELAY * 10
+            LOGGER.info('Delaying an extra %s seconds...', extra_delay)
+            time.sleep(extra_delay)
         else:
             LOGGER.warning('Unhandled HTTP status code: %s', status_code)
         time.sleep(config.RUN_DELAY)
@@ -70,7 +73,7 @@ def send_observation(observation):
     try:
         response = requests.request(method=method, url=url, json=observation)
     except requests.exceptions.ConnectionError as e:
-        LOGGER.error('API HTTP request error.  Could be invalid URL or no internet connection.  %s', e)
+        LOGGER.error('API HTTP request error. URL.  %s', url)
         return 404
 
     LOGGER.debug('Request response %s', response)
