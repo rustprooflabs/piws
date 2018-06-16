@@ -6,6 +6,7 @@
     - server
     - ssh
     - ufw
+    - wifi
     - postgresql_server
     - sqitch
     - pip
