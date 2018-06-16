@@ -134,11 +134,15 @@ class ArduinoStation():
             key = line[0]
             try:
                 value = float(line[1].rstrip())
+                observation[key] = value
             except IndexError:
                 msg = 'Error parsing observation. '
                 msg += 'This is OK once or twice when starting up.'
                 LOGGER.warning(msg)
-            observation[key] = value
-            i += 1
+            except ValueError as e:
+                msg = 'Error parsing observation.  Invalid value:  %s'
+                LOGGER.error(msg, e)
+
+            i += 1 # Counter always gets incremented
 
         return observation
