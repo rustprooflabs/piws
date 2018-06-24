@@ -19,6 +19,8 @@ PiWS services.
 * Arudino Temperature Control Library (Dallas Temperature)
 * DHT library
 * PostgreSQL 9.5 +
+* Python
+
 
 ### Will you support older version of PostgreSQL than 9.5?
 
@@ -94,5 +96,6 @@ Coming soon...
 
 ## Getting Help
 
-If you have questions, feel free to ask at support@rustprooflabs.com.
+If you have questions, feel free to email RustProof Labs at support@rustprooflabs.com
+or use [our contact form](https://www.rustprooflabs.com/contact).
 
