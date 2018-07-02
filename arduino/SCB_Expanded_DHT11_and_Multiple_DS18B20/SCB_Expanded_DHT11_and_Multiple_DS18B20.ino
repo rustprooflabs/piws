@@ -76,5 +76,5 @@ void dht11(){
 void loop() {
    ds18b20();
    dht11();
-   delay(1000);
+   delay(5000);
 }

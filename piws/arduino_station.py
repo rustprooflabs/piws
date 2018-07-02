@@ -60,8 +60,13 @@ class ArduinoStation():
         self.baudrate = 9600
         self.ser = self._setup_serial_connection()
 
+
         # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
-        self.lines_per_observation = 3
+        ## FIXME:  Should look for key pairs in list and submit when no more unique readings are coming through
+        if config.SCB_CONFIGURATION = 'standard':
+            self.lines_per_observation = 3
+        else:
+            self.lines_per_observation = 7 # Allows for up to 5 DS18B20 along w/ DHT-11.
 
     def _setup_serial_connection(self):
         """ Cycles through USB port numbers to attempt establishing connection
