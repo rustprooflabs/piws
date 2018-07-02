@@ -1,5 +1,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <dht.h>
 
 // Pin for DS18B20 Temp sensor
 #define ONE_WIRE_BUS 11
@@ -7,6 +8,11 @@
 
 OneWire oneWire(ONE_WIRE_BUS); 
 DallasTemperature sensors(&oneWire);
+
+// Pin for DHT11 Temp/Humidity sensor
+dht DHT;
+#define DHT11_PIN 5
+
 
 uint8_t num_sensors = 0;
 
@@ -62,7 +68,18 @@ void ds18b20(){
   }
 }
 
+
+void dht11(){
+  int chk = DHT.read11(DHT11_PIN);
+  Serial.print("dht11_t:");
+  Serial.println(DHT.temperature);
+  Serial.print("dht11_h:");
+  Serial.println(DHT.humidity);
+}
+
+
 void loop() {
    ds18b20();
+   dht11();
    delay(1000);
 }
