@@ -73,6 +73,12 @@ export TYG_SENSOR_ID=0
 python send_to_api.py
 ```
 
+#### Env Var for Expanded SCB
+
+```bash
+export PIWS_SCB_CONFIGURATION=expanded
+```
+
 ### Manual Database deployments
 
 For testing purposes:

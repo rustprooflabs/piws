@@ -63,7 +63,7 @@ class ArduinoStation():
 
         # Sensor 1 (DHT11) has 2 readings, Sensor 2 has 1
         ## FIXME:  Should look for key pairs in list and submit when no more unique readings are coming through
-        if config.SCB_CONFIGURATION = 'standard':
+        if config.SCB_CONFIGURATION == 'standard':
             self.lines_per_observation = 3
         else:
             self.lines_per_observation = 7 # Allows for up to 5 DS18B20 along w/ DHT-11.
