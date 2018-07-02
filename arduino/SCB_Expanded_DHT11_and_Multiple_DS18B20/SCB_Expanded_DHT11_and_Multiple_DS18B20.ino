@@ -58,7 +58,7 @@ void ds18b20(){
  
   
   for (int i=0; i<num_sensors; i++) {
-    Serial.print("ds18b20_");
+    Serial.print("ds18b20_t_");
     printAddress(ds_addresses[i], i);
     Serial.print(":"); 
     Serial.println(sensors.getTempCByIndex(i));
