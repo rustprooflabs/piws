@@ -127,19 +127,31 @@ class ArduinoStation():
             add_observation(observation)
 
     def _get_observation(self):
-        """Pulls sensor readings, stuffs into dict."""
-        key_value_sep = ':'
+        """Pulls sensor readings, stuffs into dict."""        
         i = 0
-        observation = dict()
 
+        # Gets unique observation lines
+        observation_lines = set()
         while i < self.lines_per_observation:
             line = self.lines.pop()
-            line = line.decode('utf-8')
-            line = line.split(key_value_sep)
-            key = line[0]
+            observation_lines.add(line)
+            i += 1
+
+        LOGGER.debug('Observation lines:  %s', observation_lines)
+        observation = self._parse_sensor_observation(observation_lines)                    
+        return observation
+
+
+    def _parse_sensor_observation(self, observation_lines):
+        observation = dict()
+        ds18b20_uq = list()
+
+        for line in observation_lines:
+            sensor_line = self._decode_sensor_line(line)
+            key = sensor_line[0]
+
             try:
-                value = float(line[1].rstrip())
-                observation[key] = value
+                value = float(sensor_line[1].rstrip())
             except IndexError:
                 msg = 'Error parsing observation. '
                 msg += 'This is OK once or twice when starting up.'
@@ -148,6 +160,26 @@ class ArduinoStation():
                 msg = 'Error parsing observation.  Invalid value:  %s'
                 LOGGER.error(msg, e)
 
-            i += 1 # Counter always gets incremented
+
+            # If DS18B20 is part of Expanded firmware... the trailing underscore indicates unique ID is following
+            if key[:10] == 'ds18b20_t_':
+                node_unique_id = key[10:]
+                uq_kv = {node_unique_id: value}
+                ds18b20_uq.append(uq_kv)
+            else:
+                observation[key] = value
+
+
+        if len(ds18b20_uq) > 0:
+            observation['ds18b20_t_uq'] = ds18b20_uq
 
         return observation
+
+
+    def _decode_sensor_line(self, line):
+        """ Decodes a single line representing the individual observation from a single sensor node."""
+        key_value_sep = ':'
+        line = line.decode('utf-8')
+        line = line.split(key_value_sep)
+        return line
+

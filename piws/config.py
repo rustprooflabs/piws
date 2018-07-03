@@ -58,6 +58,7 @@ DATABASE_STRING = get_db_string()
 # Options are Standard and Expanded
 try:
     SCB_CONFIGURATION = os.environ['PIWS_SCB_CONFIGURATION']
+    LOGGER.info('SCB set to %s configuration', SCB_CONFIGURATION)
 except KeyError:
     SCB_CONFIGURATION = 'standard'
     LOGGER.info('Sensor control board defaulting to standard configuration.  Set env var PIWS_SCB_CONFIGURATION to "expanded" to override.')
