@@ -152,6 +152,15 @@ class ArduinoStation():
 
             try:
                 value = float(sensor_line[1].rstrip())
+
+                # If DS18B20 is part of Expanded firmware... the trailing underscore indicates unique ID is following
+                if key[:10] == 'ds18b20_t_':
+                    node_unique_id = key[10:]
+                    uq_kv = {node_unique_id: value}
+                    ds18b20_uq.append(uq_kv)
+                else:
+                    observation[key] = value
+
             except IndexError:
                 msg = 'Error parsing observation. '
                 msg += 'This is OK once or twice when starting up.'
@@ -161,13 +170,6 @@ class ArduinoStation():
                 LOGGER.error(msg, e)
 
 
-            # If DS18B20 is part of Expanded firmware... the trailing underscore indicates unique ID is following
-            if key[:10] == 'ds18b20_t_':
-                node_unique_id = key[10:]
-                uq_kv = {node_unique_id: value}
-                ds18b20_uq.append(uq_kv)
-            else:
-                observation[key] = value
 
 
         if len(ds18b20_uq) > 0:
