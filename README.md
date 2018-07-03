@@ -56,6 +56,9 @@ export DB_NAME=piws
 export DB_PW=SecurePassword
 export APP_LOG_LEVEL=DEBUG
 
+# Options expanded/standard.  Default is expanded
+#export PIWS_SCB_CONFIGURATION=expanded
+
 python run_station.py
 
 ```
