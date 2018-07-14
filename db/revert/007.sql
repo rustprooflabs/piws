@@ -2,6 +2,19 @@
 
 BEGIN;
 
+    CREATE OR REPLACE FUNCTION piws.mark_quarterhour_submitted(end_15min timestamp with time zone, sensor_name text)
+     RETURNS integer
+     LANGUAGE sql
+     SECURITY DEFINER
+     SET search_path TO "piws, pg_temp"
+    AS $function$
+            INSERT INTO piws.api_quarterhour_submitted(end_15min, sensor_name)
+                VALUES (end_15min, sensor_name)
+            RETURNING api_quarterhour_submitted_id
+
+        $function$
+    ;
+
     ALTER TABLE piws.api_quarterhour_submitted
         DROP CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_unique_sensor"
     ;

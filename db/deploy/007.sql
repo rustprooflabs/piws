@@ -191,4 +191,21 @@ BEGIN;
         UNIQUE (end_15min, sensor_name, node_unique_id)
     ;
 
+
+
+    CREATE FUNCTION piws.mark_quarterhour_submitted(
+        end_15min timestamp with time zone, sensor_name text, node_unique_id TEXT)
+     RETURNS integer
+     LANGUAGE sql
+     SECURITY DEFINER
+     SET search_path TO "piws, pg_temp"
+    AS $function$
+            INSERT INTO piws.api_quarterhour_submitted(end_15min, sensor_name, node_unique_id)
+                VALUES (end_15min, sensor_name, node_unique_id)
+            RETURNING api_quarterhour_submitted_id
+
+        $function$
+    ;
+
+
 COMMIT;

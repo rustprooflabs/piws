@@ -37,7 +37,8 @@ def process_observations():
         LOGGER.debug('API POST status code:  %s', status_code)
         if status_code == 201:
             observation_submitted(end_15min=observation['end_15min'],
-                                  sensor_name=observation['sensor_name'])
+                                  sensor_name=observation['sensor_name'],
+                                  node_unique_id=observation['node_unique_id'])
         elif status_code == 401:
             error_msg = 'API call returned Unauthroized. '
             error_msg += 'Fix API Key and Sensor ID and try again.'
@@ -80,10 +81,10 @@ def send_observation(observation):
     return response.status_code
 
 
-def observation_submitted(end_15min, sensor_name):
+def observation_submitted(end_15min, sensor_name, node_unique_id):
     """Marks the quarter-hour observation as submitted in the PiWS database."""
-    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ, %s::TEXT)"
-    params = [end_15min, sensor_name]
+    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ, %s::TEXT, %s::TEXT)"
+    params = [end_15min, sensor_name, node_unique_id]
     results = db.insert(sql_raw, params)
     LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
 
