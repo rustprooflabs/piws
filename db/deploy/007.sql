@@ -137,6 +137,24 @@ BEGIN;
 
 
 
+    ------------------------------------------
+    -----------------------------------------
+    -- Remove the old constraint looking at just two columns
+    ALTER TABLE piws.api_quarterhour_submitted
+        DROP CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_sensor_name"
+    ;
+
+    -- Add new column and updated UNIQUE index
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD node_unique_id TEXT NULL;
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_unique_sensor"
+        UNIQUE (end_15min, sensor_name, node_unique_id)
+    ;
+
+
+
+
 
     -----------------------------------------------
     DROP VIEW piws.vquarterhoursummary;
@@ -175,21 +193,6 @@ BEGIN;
       ORDER BY v.datum DESC, v.quarterhour DESC
       ;
 
-
-    ------------------------------------------
-    -----------------------------------------
-    -- Remove the old constraint looking at just two columns
-    ALTER TABLE piws.api_quarterhour_submitted
-        DROP CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_sensor_name"
-    ;
-
-    -- Add new column and updated UNIQUE index
-    ALTER TABLE piws.api_quarterhour_submitted
-        ADD node_unique_id TEXT NULL;
-    ALTER TABLE piws.api_quarterhour_submitted
-        ADD CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_unique_sensor"
-        UNIQUE (end_15min, sensor_name, node_unique_id)
-    ;
 
 
 

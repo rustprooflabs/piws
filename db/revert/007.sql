@@ -70,7 +70,7 @@ BEGIN;
     -- Reset base table import status so it can reload.
     UPDATE piws.observation
         SET imported = False
-        FROM piws.observation;
+        ;
 
     -- Put back original constraint.
     ALTER TABLE piws.observation_minute 
