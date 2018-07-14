@@ -2,6 +2,41 @@
 
 BEGIN;
 
+    DROP VIEW piws.vquarterhoursummary;
+    CREATE VIEW piws.vquarterhoursummary AS
+     WITH "values" AS (
+             SELECT c.datum,
+                t.hour,
+                t.quarterhour,
+                m.sensor_name,
+                m.timezone,
+                ((c.datum || ' '::text) || "right"(t.quarterhour, 5))::timestamp without time zone AS end_15min,
+                round(avg(m.sensor_value), 2) AS sensor_value
+               FROM observation_minute m
+                 JOIN "time" t ON m.time_id = t.time_id
+                 JOIN calendar c ON m.calendar_id = c.calendar_id
+              GROUP BY c.datum, t.hour, t.quarterhour, m.sensor_name, m.timezone, (((c.datum || ' '::text) || "right"(t.quarterhour, 5))::timestamp without time zone)
+            )
+     SELECT v.datum,
+        v.hour,
+        v.quarterhour,
+        v.sensor_name,
+        v.timezone,
+        v.end_15min,
+        v.sensor_value,
+            CASE
+                WHEN aqs.end_15min IS NOT NULL THEN 1
+                ELSE 0
+            END AS submitted_to_api
+       FROM "values" v
+         LEFT JOIN api_quarterhour_submitted aqs ON v.end_15min = aqs.end_15min AND v.sensor_name = aqs.sensor_name
+      ORDER BY v.datum DESC, v.quarterhour DESC
+      ;
+
+
+      --------------------------------------------------
+
+
     ALTER TABLE piws.observation_minute 
         DROP CONSTRAINT uq_observation_minute_datetime_sensor_with_id;
 
