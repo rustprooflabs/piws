@@ -73,7 +73,7 @@ def send_observation(observation):
     try:
         response = requests.request(method=method, url=url, json=observation)
     except requests.exceptions.ConnectionError as e:
-        LOGGER.error('API HTTP request error. URL.  %s', url)
+        LOGGER.error('API HTTP request error. URL.  %s \n Error: %s', url, e)
         return 404
 
     LOGGER.debug('Request response %s', response)

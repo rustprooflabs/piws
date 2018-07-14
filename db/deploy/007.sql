@@ -169,9 +169,26 @@ BEGIN;
                 ELSE 0
             END AS submitted_to_api
        FROM "values" v
-         LEFT JOIN api_quarterhour_submitted aqs ON v.end_15min = aqs.end_15min AND v.sensor_name = aqs.sensor_name
+         LEFT JOIN piws.api_quarterhour_submitted aqs 
+            ON v.end_15min = aqs.end_15min AND v.sensor_name = aqs.sensor_name
+               AND COALESCE(v.node_unique_id, '') = COALESCE(aqs.node_unique_id, '')
       ORDER BY v.datum DESC, v.quarterhour DESC
       ;
 
+
+    ------------------------------------------
+    -----------------------------------------
+    -- Remove the old constraint looking at just two columns
+    ALTER TABLE piws.api_quarterhour_submitted
+        DROP CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_sensor_name"
+    ;
+
+    -- Add new column and updated UNIQUE index
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD node_unique_id TEXT NULL;
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_unique_sensor"
+        UNIQUE (end_15min, sensor_name, node_unique_id)
+    ;
 
 COMMIT;

@@ -2,6 +2,17 @@
 
 BEGIN;
 
+    ALTER TABLE piws.api_quarterhour_submitted
+        DROP CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_unique_sensor"
+    ;
+
+    ALTER TABLE piws.api_quarterhour_submitted
+        ADD CONSTRAINT  "uq_piws_api_quarterhour_submitted_end_15min_sensor_name"
+        UNIQUE (end_15min, sensor_name)
+    ;
+
+    -----------------------------------------------------
+
     DROP VIEW piws.vquarterhoursummary;
     CREATE VIEW piws.vquarterhoursummary AS
      WITH "values" AS (
