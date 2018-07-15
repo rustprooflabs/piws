@@ -56,6 +56,9 @@ export DB_NAME=piws
 export DB_PW=SecurePassword
 export APP_LOG_LEVEL=DEBUG
 
+# Options expanded/standard.  Default is expanded
+#export PIWS_SCB_CONFIGURATION=expanded
+
 python run_station.py
 
 ```
@@ -73,12 +76,18 @@ export TYG_SENSOR_ID=0
 python send_to_api.py
 ```
 
+#### Env Var for Expanded SCB
+
+```bash
+export PIWS_SCB_CONFIGURATION=expanded
+```
+
 ### Manual Database deployments
 
 For testing purposes:
 
 ```bash
-sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
+PGOPTIONS='-c search_path=piws' sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
 ```
 
 ## Licensing
