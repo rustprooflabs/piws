@@ -177,4 +177,8 @@ BEGIN;
 
     SELECT * FROM piws.load_minute_observations();
 
+
+    ALTER TABLE piws.api_quarterhour_submitted DROP COLUMN node_unique_id;
+    DROP FUNCTION piws.mark_quarterhour_submitted(TIMESTAMPTZ, TEXT, TEXT);
+
 COMMIT;

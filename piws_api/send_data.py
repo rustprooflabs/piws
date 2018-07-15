@@ -87,4 +87,5 @@ def observation_submitted(end_15min, sensor_name, node_unique_id):
     params = [end_15min, sensor_name, node_unique_id]
     results = db.insert(sql_raw, params)
     LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
+    LOGGER.debug('Query for marking submission complete: %s, %s', sql_raw, params)
 
