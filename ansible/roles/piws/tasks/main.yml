@@ -28,8 +28,9 @@
   become_user: postgres
 
 
+# Note:  Added PGOPTIONS.... before sqitch command to fix issue with delta 004 that cropped up today RE non-fully qualified schemas...
 - name: Deploy database using Sqitch
-  shell: "sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  shell: "PGOPTIONS='-c search_path=piws,public' sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
   args:
     chdir: "{{ repo_path }}/db"
 
