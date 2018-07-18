@@ -19,6 +19,8 @@ PiWS services.
 * Arudino Temperature Control Library (Dallas Temperature)
 * DHT library
 * PostgreSQL 9.5 +
+* Python
+
 
 ### Will you support older version of PostgreSQL than 9.5?
 
@@ -54,6 +56,9 @@ export DB_NAME=piws
 export DB_PW=SecurePassword
 export APP_LOG_LEVEL=DEBUG
 
+# Options expanded/standard.  Default is expanded
+#export PIWS_SCB_CONFIGURATION=expanded
+
 python run_station.py
 
 ```
@@ -71,12 +76,18 @@ export TYG_SENSOR_ID=0
 python send_to_api.py
 ```
 
+#### Env Var for Expanded SCB
+
+```bash
+export PIWS_SCB_CONFIGURATION=expanded
+```
+
 ### Manual Database deployments
 
 For testing purposes:
 
 ```bash
-sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
+PGOPTIONS='-c search_path=piws' sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
 ```
 
 ## Licensing
@@ -94,5 +105,6 @@ Coming soon...
 
 ## Getting Help
 
-If you have questions, feel free to ask at support@rustprooflabs.com.
+If you have questions, feel free to email RustProof Labs at support@rustprooflabs.com
+or use [our contact form](https://www.rustprooflabs.com/contact).
 
