@@ -20,6 +20,7 @@ PiWS services.
 * DHT library
 * PostgreSQL 9.5 +
 * Python
+* [PostgreSQL Data Dictionary (pgdd)](https://github.com/rustprooflabs/pgdd)
 
 
 ### Will you support older version of PostgreSQL than 9.5?

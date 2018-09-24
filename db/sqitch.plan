@@ -9,3 +9,4 @@
 005 [004] 2018-04-18T16:58:38Z ryanlambert <ryan@rustprooflabs.com> # Improve data structure and retention
 006 [005] 2018-04-27T12:56:55Z Ryan Lambert <ryan@rustprooflabs.com> # Improving loading of minute-level data to avoid UQ violations
 007 [006] 2018-07-03T19:38:36Z Ryan Lambert <ryan@rustprooflabs.com> # Improving for multiple DS18B20 sensors
+008 [pgdd:001] 2018-09-24T17:25:40Z Ryan Lambert,,, <ryanlambert@tag1> # Data dictionary improvements

@@ -11,6 +11,17 @@
     force: yes
 
 
+- name: "Clone PostgreSQL Data Dictionary (pgdd) Repository."
+  git:
+    repo: "{{ repo_url_pgdd }}"
+    dest: "{{ repo_path_pgdd }}"
+    version: "{{ repo_branch_pgdd }}"
+    key_file: "{{ ssh_path }}/id_rsa"
+    accept_hostkey: yes
+    force: yes
+
+
+
 - name: Create piws database
   postgresql_db:
     name: "{{ piws_db_name }}"
@@ -26,6 +37,11 @@
     password: "{{ piws_db_password }}"
     priv: "ALL"
   become_user: postgres
+
+- name: Deploy PostgreSQL data dictionary to PiWS database
+  shell: "sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
+  args:
+    chdir: "{{ repo_path_pgdd }}/db"
 
 
 # Note:  Added PGOPTIONS.... before sqitch command to fix issue with delta 004 that cropped up today RE non-fully qualified schemas...
