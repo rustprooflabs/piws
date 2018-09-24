@@ -2,6 +2,13 @@
 
 BEGIN;
 
+	-- Schema comment
+	---------------------------------------
+	COMMENT ON SCHEMA piws
+		IS 'Pi Weather Station (PiWS): https://github.com/rustprooflabs/piws'
+		;
+
+
 	-- Table comments
 	---------------------------------------
 	COMMENT ON TABLE public.calendar 

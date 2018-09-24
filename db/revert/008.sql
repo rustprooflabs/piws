@@ -2,6 +2,10 @@
 
 BEGIN;
 
+	COMMENT ON SCHEMA piws
+			IS NULL
+			;
+			
 	COMMENT ON TABLE public.calendar IS NULL;
 
 	COMMENT ON TABLE public.time IS NULL;
