@@ -20,6 +20,7 @@ PiWS services.
 * DHT library
 * PostgreSQL 9.5 +
 * Python
+* [PostgreSQL Data Dictionary (pgdd)](https://github.com/rustprooflabs/pgdd)
 
 
 ### Will you support older version of PostgreSQL than 9.5?
@@ -87,7 +88,7 @@ export PIWS_SCB_CONFIGURATION=expanded
 For testing purposes:
 
 ```bash
-PGOPTIONS='-c search_path=piws' sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
+PGOPTIONS='-c search_path=piws,public' sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
 ```
 
 ## Licensing
