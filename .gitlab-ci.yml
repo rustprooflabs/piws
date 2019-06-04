@@ -1,0 +1,72 @@
+---
+
+stages:
+  - build
+  - verify
+  - code_quality
+  - deploy
+
+
+before_script:
+  - python3 -V
+
+
+install_venv:
+  stage: build
+  script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - python -V
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - venv/
+
+
+run_junit_test:
+  stage: verify
+  script:
+    - source venv/bin/activate
+    - python -V
+    - python -m pytest --junitxml=pytest.xml tests/
+  artifacts:
+    paths:
+      - pytest.xml
+    reports:
+      junit: pytest.xml
+  allow_failure: true
+
+
+
+run_coverage:
+  stage: code_quality
+  script:
+    - source venv/bin/activate
+    - python -V
+    - coverage run -m unittest tests/*.py
+    - coverage report -m piws/*.py piws_api/*.py
+    - coverage xml --include="piws/*.py","piws_api/*.py" -o coverage.xml
+  artifacts:
+    paths:
+      - coverage.xml
+    reports:
+      metrics: coverage.xml
+  allow_failure: true
+
+
+ansible_lint:
+  stage: code_quality
+  script:
+    - cd ansible
+    - ansible-lint *.yml
+  allow_failure: true
+
+
+#full_ansible_build:
+#  stage: deploy
+#  script:
+#    - cd ansible
+#    - ansible-playbook -i inventory/localhost build.yml
+
+
+...

@@ -91,6 +91,16 @@ For testing purposes:
 PGOPTIONS='-c search_path=piws,public' sqitch deploy db:pg://piws:yourpassword@127.0.0.1:5432/piws
 ```
 
+
+## Unit tests w/ Coverage
+
+```bash
+source ~/venv/piws/bin/activate
+cd  /media/sf_git/piws
+coverage run -m unittest tests/*.py
+
+```
+
 ## Licensing
 
 MIT

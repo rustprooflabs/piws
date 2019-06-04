@@ -15,7 +15,14 @@ except KeyError:
 LOGGER = logging.getLogger(__name__)
 LOG_FORMAT = '%(levelname)s - %(asctime)s - %(name)s - %(message)s'
 LOG_PATH = '/var/log/piws/piws.log'
-HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+
+try:
+    HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+except FileNotFoundError:
+    print('WARNING!  LOG_PATH (%s) not found.  Defaulting to local path.')
+    LOG_PATH = './piws.log'
+    HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+
 FORMATTER = logging.Formatter(LOG_FORMAT)
 HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)
