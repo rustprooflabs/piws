@@ -7,7 +7,7 @@ TEMP_F = 212.0
 
 class ChartsTests(unittest.TestCase):
 
-    def test_convert_c_to_f_returns_WHAT_ARE_WE_TESTING(self):
+    def test_convert_c_to_f_returns_expected_type(self):
         result = arduino_station.convert_c_to_f(TEMP_C)
         expected = float
         self.assertEqual(expected, type(result))
