@@ -15,4 +15,6 @@ repo_url_pgdd: https://github.com/rustprooflabs/pgdd.git
 repo_branch_pgdd: master
 repo_path_pgdd: /srv/pgdd
 
+piws_db_password: SecurePassword
+
 ...

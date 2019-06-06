@@ -9,7 +9,9 @@ venv_path: /srv/piws_api_venv
 piws_db_name: piws
 piws_db_user: piws
 piws_db_ip: 127.0.0.1
+piws_db_password: SecurePassword
 
 python_version: python3.5
+
 
 ...

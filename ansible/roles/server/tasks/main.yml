@@ -30,14 +30,13 @@
 
 - name: Clean out files to save space on small devices
   command: apt-get clean
-  #become: yes
 
 
-- name: "Create PiWS admin User: {{ piws_admin_user }}"
+- name: "Create PiWS Linux User: {{ piws_admin_user }}"
   user:
     name: "{{ piws_admin_user }}"
     password: "{{ piws_admin_password }}"
-    groups: sudo,dialout
+    groups: dialout
     append: yes
     shell: /bin/bash
 
