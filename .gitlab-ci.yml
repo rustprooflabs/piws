@@ -62,11 +62,12 @@ ansible_lint:
   allow_failure: true
 
 
-#full_ansible_build:
-#  stage: deploy
-#  script:
-#    - cd ansible
-#    - ansible-playbook -i inventory/localhost build.yml
+piws_ansible_build:
+  stage: deploy
+  script:
+    - cd ansible
+    - ansible-playbook -i inventory/localhost build.yml
+  when: manual
 
 
 ...
