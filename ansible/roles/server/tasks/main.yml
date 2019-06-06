@@ -55,6 +55,17 @@
     hour: 5
     job: "/sbin/shutdown -r now"
     state: present
+  when: pi_reboot
+
+
+- name: Set crontab to NOT reboot Pi once a day
+  cron:
+    name: "reboot pi"
+    minute: 37
+    hour: 5
+    job: "/sbin/shutdown -r now"
+    state: absent
+  when: not pi_reboot
 
 
 ...
