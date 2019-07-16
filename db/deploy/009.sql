@@ -18,8 +18,9 @@ BEGIN;
         INSERT INTO piws.observation (calendar_id, time_id, timezone, sensor_values)
             SELECT c.calendar_id, t.time_id, tzone, sensor_values
             FROM public.calendar c
-            INNER JOIN public.time t ON t.timeofday = obs_time
-            WHERE c.datum = obs_date
+            INNER JOIN public.time t 
+            	ON t.timeofday = date_trunc('second', $2::TIME)
+            WHERE c.datum = $1
 
             RETURNING observation_id
 
