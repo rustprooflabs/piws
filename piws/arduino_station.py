@@ -14,7 +14,6 @@ tzone = 'America/Denver'
 os.environ['TZ'] = tzone
 
 
-
 def add_observation(observation):
     """ Builds observation and sends to PostgreSQL function."""
     tstamp = datetime.datetime.today()
@@ -30,14 +29,14 @@ def add_observation(observation):
                                        minute=obs_time.minute,
                                        second=obs_time.second)
 
-    sql_raw = 'SELECT * FROM piws.insert_observation(%s::INT, %s::DATE, '
+    sql_raw = 'SELECT * FROM piws.insert_observation(%s::DATE, '
     sql_raw += '%s::TIME,  %s::TEXT, %s::JSONB) '
-    params = [1,
-              obs_date_sql,
+    params = [obs_date_sql,
               obs_time_sql,
               tzone,
               json.dumps(observation, ensure_ascii=False)]
     db.insert(sql_raw, params)
+
 
 def convert_c_to_f(temp_c):
     """Converts temp (C) to temp (F)."""
