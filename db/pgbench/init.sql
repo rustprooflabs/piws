@@ -11,8 +11,8 @@
 
 
 
-INSERT INTO piws.observation (sensor_id, calendar_id, time_id, timezone, sensor_values)
-SELECT 1,
+INSERT INTO piws.observation (calendar_id, time_id, timezone, sensor_values)
+SELECT 
 	FLOOR( (random() * 365) + 1 )::INT AS calendar_id,
 	FLOOR( (random() * 86398) + 1 )::INT AS time_id,
 	'America/Denver' AS timezone,
