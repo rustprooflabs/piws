@@ -10,3 +10,4 @@
 006 [005] 2018-04-27T12:56:55Z Ryan Lambert <ryan@rustprooflabs.com> # Improving loading of minute-level data to avoid UQ violations
 007 [006] 2018-07-03T19:38:36Z Ryan Lambert <ryan@rustprooflabs.com> # Improving for multiple DS18B20 sensors
 008 [pgdd:001] 2018-09-24T17:25:40Z Ryan Lambert <ryan@rustprooflabs.com> # Data dictionary improvements
+009 [008] 2019-07-16T01:10:41Z Ryan Lambert <ryan@rustprooflabs.com> # Remove unused sensor_id column
