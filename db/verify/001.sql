@@ -4,7 +4,7 @@ BEGIN;
 
 
 
-SELECT observation_id, sensor_id, calendar_id, time_id, timezone, sensor_values
+SELECT observation_id, calendar_id, time_id, timezone, sensor_values
 	FROM piws.observation
 	WHERE FALSE
 ;
