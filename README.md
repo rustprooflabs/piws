@@ -18,7 +18,7 @@ PiWS services.
 * Git
 * Arudino Temperature Control Library (Dallas Temperature)
 * DHT library
-* PostgreSQL 9.5 +
+* PostgreSQL 9.5 + ( Will bump to 11 when IDENTITY columns introduced)
 * Python
 * [PostgreSQL Data Dictionary (pgdd)](https://github.com/rustprooflabs/pgdd)
 
