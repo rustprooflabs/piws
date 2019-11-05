@@ -1,6 +1,6 @@
 ---
 
-pg_version: 9.6
+pg_version: 11
 
 pg_wal_level: hot_standby
 pg_max_wal_senders: 2
