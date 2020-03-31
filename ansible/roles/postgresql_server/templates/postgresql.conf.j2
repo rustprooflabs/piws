@@ -188,9 +188,11 @@ wal_level = {{ pg_wal_level }}
 
 # - Checkpoints -
 
-checkpoint_timeout = {{ pg_checkpoint_timeout }}		# range 30s-1d
+checkpoint_timeout = {{ pg_checkpoint_timeout }}
+checkpoint_completion_target = {{ pg_checkpoint_completion_target }}
 max_wal_size = {{ pg_max_wal_size }}
 min_wal_size = {{ pg_min_wal_size }}
+
 #checkpoint_completion_target = 0.5	# checkpoint target duration, 0.0 - 1.0
 #checkpoint_flush_after = 256kB		# measured in pages, 0 disables
 #checkpoint_warning = 30s		# 0 disables

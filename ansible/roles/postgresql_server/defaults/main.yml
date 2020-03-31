@@ -2,12 +2,13 @@
 
 pg_version: 11
 
-pg_wal_level: hot_standby
-pg_max_wal_senders: 2
-pg_wal_keep_segments: 16
-pg_hot_standby: on
+pg_wal_level: minimal
+pg_max_wal_senders: 0
+pg_wal_keep_segments: 8
+pg_hot_standby: off
 
-pg_checkpoint_timeout: 30min   # range 30s-1d
+pg_checkpoint_timeout: 60min
+pg_checkpoint_completion_target: 0.9
 pg_max_wal_size: 512MB
 pg_min_wal_size: 80MB
 pg_shared_buffers: 50MB

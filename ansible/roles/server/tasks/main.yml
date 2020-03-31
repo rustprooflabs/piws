@@ -21,6 +21,7 @@
     - postgresql-client
     - htop
     - python-psycopg2
+    - python3-psycopg2
     - libpq-dev
     - python3-dev
     - iotop
