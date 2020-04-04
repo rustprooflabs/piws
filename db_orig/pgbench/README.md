@@ -8,7 +8,7 @@ Using `-R .2` simulates this rate of data ingestion.
 Seed with number of rows collected in 4 weeks (`-v scale=4`) of normal operation.
 The following command takes about 5 minutes to run on a Raspberry Pi 3B.
 
-> Note:  Dates start with 1/1/2018 and increment every 10 seconds.
+> Note:  Dates are scattered randomly in this simple generation.
 
 ```bash
 psql -d piws -f ./init.sql -v scale=4
@@ -28,13 +28,13 @@ Results:
 ```bash
 number of clients: 1
 number of threads: 1
-duration: 120 s
-number of transactions actually processed: 19
-latency average = 58.399 ms
-latency stddev = 108.854 ms
-rate limit schedule lag: avg 14.168 (max 94.540) ms
-tps = 0.158329 (including connections establishing)
-tps = 0.158407 (excluding connections establishing)
+duration: 3600 s
+number of transactions actually processed: 536
+latency average = 19334.160 ms
+latency stddev = 11622.904 ms
+rate limit schedule lag: avg 13483.598 (max 53810.393) ms
+tps = 0.148826 (including connections establishing)
+tps = 0.148826 (excluding connections establishing)
 ```
 
 uptime from 10 minutes into the run:

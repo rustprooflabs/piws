@@ -54,12 +54,16 @@ except KeyError:
     LOGGER.info(msg)
 
 
+
+APP_NAME = 'PiWS-API'
+
 def get_db_string():
     """ Builds the database connection string based on set parameters."""
-    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}'
+    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}?application_name={app}'
 
     return database_string.format(user=DB_USER, pw=DB_PW, host=DB_HOST,
-                                  port=DB_PORT, dbname=DB_NAME)
+                                  port=DB_PORT, dbname=DB_NAME,
+                                  app=APP_NAME)
 
 
 DATABASE_STRING = get_db_string()
