@@ -2,14 +2,24 @@
 
 
 
-- name: "Clone Pi Weather Station (PiWS) Repository.  Branch:  {{ repo_branch }}"
-  git:
-    repo: "{{ repo_url }}"
-    dest: "{{ repo_path }}"
-    version: "{{ repo_branch }}"
-    key_file: "{{ ssh_path }}/id_rsa"
-    accept_hostkey: yes
-    force: yes
+- name: "Ensure directory {{ repo_path }} exists"
+  file:
+    path: "{{ repo_path }}"
+    state: directory
+    mode: 0755
+
+
+- name: "Sync paths to target server at path {{ repo_path}}"
+  copy:
+    src: "../../../{{ item }}"
+    dest: "{{ repo_path }}/{{ item }}"
+  with_items:
+    - piws_api/
+    - send_to_api.py
+    - requirements.txt
+    - LICENSE
+    - README.md
+
 
 
 
