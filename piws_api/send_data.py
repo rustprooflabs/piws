@@ -36,9 +36,7 @@ def process_observations():
         status_code = send_observation(observation)
         LOGGER.debug('API POST status code:  %s', status_code)
         if status_code == 201:
-            observation_submitted(end_15min=observation['end_15min'],
-                                  sensor_name=observation['sensor_name'],
-                                  node_unique_id=observation['node_unique_id'])
+            observation_submitted(id=observation['id'])
         elif status_code == 401:
             error_msg = 'API call returned Unauthroized. '
             error_msg += 'Fix API Key and Sensor ID and try again.'
@@ -58,7 +56,7 @@ def get_new_observations():
     """Retrieves new observations from database using specific function.
 
     Each row returned is in JSON format."""
-    sql_raw = 'SELECT * FROM piws.quarterhour_json()'
+    sql_raw = 'SELECT * FROM piws.api_json()'
     params = list
     results = db.sel_multi(sql_raw, params)
     return results
@@ -69,10 +67,14 @@ def send_observation(observation):
     observation['api_key'] = config.TYG_API_KEY
     observation['sensor_id'] = config.TYG_SENSOR_ID
     LOGGER.debug('Observation: %s', observation)
-    url = '{api_host}/sensor/readings/'.format(api_host=config.API_HOST)
+
+    url = '{api_host}/api/v1/sensor/'
+    url = url.format(api_host=config.API_HOST)
     method = 'POST'
     try:
-        response = requests.request(method=method, url=url, json=observation)
+        response = requests.request(method=method,
+                                    url=url,
+                                    json=observation)
     except requests.exceptions.ConnectionError as e:
         LOGGER.error('API HTTP request error. URL.  %s \n Error: %s', url, e)
         return 404
@@ -81,11 +83,13 @@ def send_observation(observation):
     return response.status_code
 
 
-def observation_submitted(end_15min, sensor_name, node_unique_id):
-    """Marks the quarter-hour observation as submitted in the PiWS database."""
-    sql_raw = "SELECT * FROM piws.mark_quarterhour_submitted(%s::TIMESTAMPTZ, %s::TEXT, %s::TEXT)"
-    params = [end_15min, sensor_name, node_unique_id]
-    results = db.insert(sql_raw, params)
-    LOGGER.debug('Observation submitted PK for tracking: %s', results[0])
+def observation_submitted(id):
+    """Marks the quarter-hour observation as submitted in the
+    PiWS database.
+    """
+    sql_raw = "SELECT * FROM piws.mark_submitted(%s::BIGINT)"
+    params = [id]
+    results = db.update(sql_raw, params)
+    LOGGER.debug('Observation submitted for id: %s', id)
     LOGGER.debug('Query for marking submission complete: %s, %s', sql_raw, params)
 
