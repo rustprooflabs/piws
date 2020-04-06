@@ -260,163 +260,55 @@ $function$
 
 
 
-/*
+CREATE VIEW piws.vobservation AS
+SELECT o.id, o.observe_date, nm.column_name AS sensor_name,
+        o.sensor_value, o.node_unique_id, o.imported
+    FROM piws.observation o
+    INNER JOIN sensor.node_model nm
+        ON o.node_model_id = nm.id
+;
 
-CREATE VIEW piws.minute_observations AS
-WITH unflatten AS (
-SELECT u.id, u.observe_date,
-		'ds18b20_t'::TEXT AS sensor_name,
-		jsonb_object_keys(observation_rows)
-			AS node_unique_id,
-		(observation_rows->>jsonb_object_keys(observation_rows))::NUMERIC
-			AS sensor_value
-	FROM (SELECT o.id, o.observe_date,
-				jsonb_array_elements(o.sensor_values -> 'ds18b20_t_uq')
-					AS observation_rows
-			FROM piws.observation_raw o
-			WHERE o.sensor_values ->> 'ds18b20_t_uq' IS NOT NULL
-		) u
-), stack AS (
-SELECT o.id, o.observe_date,
-        'dht11_h'::TEXT AS sensor_name,
-        (o.sensor_values ->> 'dht11_h')::NUMERIC AS sensor_value,
-        NULL AS node_unique_id
-	FROM piws.observation_raw o
-UNION
-SELECT o.id, o.observe_date,
-        'dht11_t'::TEXT AS sensor_name,
-        (o.sensor_values ->> 'dht11_t')::NUMERIC AS sensor_value,
-        NULL AS node_unique_id
-	FROM piws.observation_raw o
-UNION
-SELECT o.id, o.observe_date,
-        'ds18b20_t'::TEXT AS sensor_name,
-        (o.sensor_values ->> 'ds18b20_t')::NUMERIC AS sensor_value,
-        NULL AS node_unique_id
-    FROM piws.observation_raw o
-    WHERE (o.sensor_values ->> 'ds18b20_t')::NUMERIC <> -127
-UNION 
-SELECT o.id, o.observe_date,
-		o.sensor_name, o.sensor_value,
-		o.node_unique_id
-	FROM unflatten o 
-	WHERE o.sensor_value != -127 -- Known bad sensor reading
-)
-SELECT * 
-	FROM stack
+CREATE FUNCTION piws.api_json()
+ RETURNS TABLE(observation_data json)
+ LANGUAGE sql
+ SECURITY DEFINER ROWS 25
+ SET search_path TO 'piws, pg_temp'
+AS $function$
+
+    WITH d AS (
+        SELECT id, observe_date, sensor_name, node_unique_id,
+                ROUND(sensor_value, 2) AS sensor_value
+            FROM piws.vobservation
+            WHERE NOT imported
+            ORDER BY observe_date DESC
+            LIMIT 25
+        )
+    SELECT row_to_json(d)
+        FROM d
+
+$function$
 ;
 
 
-*/
 
-/*
+CREATE FUNCTION piws.mark_submitted(id BIGINT)
+ RETURNS BOOLEAN
+ LANGUAGE sql
+ SECURITY DEFINER
+ SET search_path TO 'piws, pg_temp'
+AS $function$
 
-    WITH obs AS (
-        SELECT o.observation_id
-            FROM piws.observation o
-            INNER JOIN public.calendar c ON o.calendar_id = c.calendar_id
-            INNER JOIN public.time t ON o.time_id = t.time_id
-            WHERE imported = False
-                -- Either older than today...
-                AND (c.datum != (NOW() AT TIME ZONE o.timezone)::DATE
-                    OR ( -- or today, but not *this* minute
-                        c.datum = (NOW() AT TIME ZONE o.timezone)::DATE
-                            AND to_char(t.timeofday  + '2 minutes'::interval, 'HH24:MI') < to_char(NOW() AT TIME ZONE o.timezone, 'HH24:MI')
-                    )
-                )
-    ), obs_ds18b20_unflatten AS (
-
-		SELECT observation_id, calendar_id, time_id, timezone,
-			(observation_rows->>jsonb_object_keys(observation_rows))::NUMERIC AS sensor_value,
-			jsonb_object_keys(observation_rows) AS node_unique_id,
-			'ds18b20_t'::TEXT AS sensor_name
-		    FROM (SELECT o.observation_id, o.calendar_id, o.time_id, o.timezone, 
-				jsonb_array_elements(o.sensor_values -> 'ds18b20_t_uq') AS observation_rows
-			    FROM piws.observation o
-			    INNER JOIN obs a ON o.observation_id = a.observation_id
-			    WHERE o.sensor_values ->> 'ds18b20_t_uq' IS NOT NULL
-			)
-			ds18b20_w_uq
-
-    ), obs_detail AS (
-        SELECT o.calendar_id, o.time_id, o.timezone,
-                'dht11_h'::TEXT AS sensor_name,
-                (o.sensor_values ->> 'dht11_h')::NUMERIC AS sensor_value,
-                NULL AS node_unique_id
-            FROM obs a
-            INNER JOIN piws.observation o ON a.observation_id = o.observation_id
-        UNION
-        SELECT o.calendar_id, o.time_id, o.timezone,
-                'dht11_t'::TEXT AS sensor_name,
-                (sensor_values ->> 'dht11_t')::NUMERIC AS sensor_value,
-                NULL AS node_unique_id
-            FROM obs a
-            INNER JOIN piws.observation o ON a.observation_id = o.observation_id
-        UNION
-        SELECT o.calendar_id, o.time_id, o.timezone,
-                'ds18b20_t'::TEXT AS sensor_name,
-                (o.sensor_values ->> 'ds18b20_t')::NUMERIC AS sensor_value,
-                NULL AS node_unique_id
-            FROM obs a
-            INNER JOIN piws.observation o ON a.observation_id = o.observation_id
-                AND (o.sensor_values ->> 'ds18b20_t')::NUMERIC != -127 -- Known bad sensor readings
-        UNION 
-        SELECT  o.calendar_id, o.time_id, o.timezone,
-        		o.sensor_name, o.sensor_value,
-        		o.node_unique_id
-        	FROM obs a 
-        	INNER JOIN obs_ds18b20_unflatten o ON a.observation_id = o.observation_id
-        		AND o.sensor_value != -127 -- Known bad sensor reading
-    ), minute_aggs AS (
-    SELECT o.calendar_id,
-            to_char(t.timeofday, 'HH24:MI') AS hhmm,
-            o.timezone,
-            o.sensor_name,
-            o.node_unique_id,
-            ROUND(AVG(o.sensor_value), 2) AS sensor_value
-        FROM obs_detail o
-        INNER JOIN public.calendar c ON o.calendar_id = c.calendar_id
-        INNER JOIN public.time t ON o.time_id = t.time_id
-       GROUP BY o.calendar_id,
-            to_char(t.timeofday, 'HH24:MI'),
-            o.timezone,
-            o.sensor_name,
-            o.node_unique_id
-    )
-    INSERT INTO piws.observation_minute (calendar_id, time_id, timezone, sensor_name, sensor_value, node_unique_id)
-    SELECT a.calendar_id, t.time_id, a.timezone, a.sensor_name, a.sensor_value, a.node_unique_id
-        FROM minute_aggs a
-        INNER JOIN public.time t ON a.hhmm = to_char(t.timeofday, 'HH24:MI') AND t.second = 0
+    UPDATE piws.observation 
+        SET imported = True 
+        WHERE id = $1
     ;
+    SELECT True
 
-
-    -----------------------------------------
-    -----------------------------------------
-    -----------------------------------------
-
-    WITH minute_obs AS (
-        SELECT DISTINCT c.calendar_id, to_char(t.timeofday, 'HH24:MI') AS hhmm
-            FROM piws.observation_minute m
-            INNER JOIN public.time t ON m.time_id = t.time_id
-            INNER JOIN public.calendar c ON m.calendar_id = c.calendar_id
-    ), not_imported AS (
-        -- NOW to convert this to a format matching the above
-        SELECT o.observation_id, c.calendar_id, to_char(t.timeofday, 'HH24:MI') AS hhmm
-            FROM piws.observation o
-            INNER JOIN public.time t ON o.time_id = t.time_id
-            INNER JOIN public.calendar c ON o.calendar_id = c.calendar_id
-            WHERE imported = False
-    )
-    UPDATE piws.observation AS o
-        SET imported = True
-        FROM  not_imported n
-        INNER JOIN minute_obs m ON m.calendar_id = n.calendar_id AND m.hhmm = n.hhmm
-        WHERE o.observation_id = n.observation_id
-        ;
-
-
+$function$
 ;
-*/
+
+
+
 
 
 COMMIT;
