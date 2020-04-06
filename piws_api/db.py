@@ -20,6 +20,9 @@ def insert(sql_raw, params):
      """
     return _execute_query(sql_raw, params, 'insert')
 
+def update(sql_raw, params):
+    """ Runs UPDATE query, returns result depending on update query executed."""
+    return _execute_query(sql_raw, params, 'update')
 
 def _execute_query(sql_raw, params, qry_type):
     """ Handles executing all types of queries based on the `qry_type`
@@ -34,6 +37,9 @@ def _execute_query(sql_raw, params, qry_type):
     elif qry_type == 'sel_multi':
         results = cur.fetchall()
     elif qry_type == 'insert':
+        results = cur.fetchone()
+        conn.commit()
+    elif qry_type == 'update':
         results = cur.fetchone()
         conn.commit()
     else:
