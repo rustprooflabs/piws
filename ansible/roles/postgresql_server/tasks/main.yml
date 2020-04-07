@@ -11,7 +11,8 @@
     - "postgresql-{{ pg_version }}"
     - python-psycopg2
     - sqitch
-
+    - postgresql-server-dev-{{ pg_version }}
+    - make
 
 - name: Copy postgres.conf template
   template:

@@ -4,40 +4,28 @@ Arduino weather station(s).
 import os
 import time
 import datetime
+import pytz
 import json
 from serial import Serial, SerialException
 from piws import db, config
 
 LOGGER = config.LOGGER
-# FIXME:  Set TimeZone in config, not here!
-tzone = 'America/Denver'
-os.environ['TZ'] = tzone
-
-
 
 def add_observation(observation):
-    """ Builds observation and sends to PostgreSQL function."""
-    tstamp = datetime.datetime.today()
-    obs_date = tstamp.date()
-    obs_date_sql = '{year}-{month}-{day}'
-    obs_date_sql = obs_date_sql.format(year=obs_date.year,
-                                       month=obs_date.month,
-                                       day=obs_date.day)
+    """ Builds observation and sends to PostgreSQL function.
+    
+    Parameters
+    --------------------
+    observation : dict
+    """
+    tstamp = datetime.datetime.now(tz=pytz.UTC)
 
-    obs_time = tstamp.time()
-    obs_time_sql = '{hour}:{minute}:{second}'
-    obs_time_sql = obs_time_sql.format(hour=obs_time.hour,
-                                       minute=obs_time.minute,
-                                       second=obs_time.second)
-
-    sql_raw = 'SELECT * FROM piws.insert_observation(%s::INT, %s::DATE, '
-    sql_raw += '%s::TIME,  %s::TEXT, %s::JSONB) '
-    params = [1,
-              obs_date_sql,
-              obs_time_sql,
-              tzone,
+    sql_raw = 'SELECT * FROM piws.insert_observation(%s::TIMESTAMPTZ, '
+    sql_raw += ' %s::JSONB) '
+    params = [tstamp,
               json.dumps(observation, ensure_ascii=False)]
     db.insert(sql_raw, params)
+
 
 def convert_c_to_f(temp_c):
     """Converts temp (C) to temp (F)."""
@@ -143,6 +131,16 @@ class ArduinoStation():
 
 
     def _parse_sensor_observation(self, observation_lines):
+        """Parses sensor observations and loads into dict.
+
+        Parameters
+        --------------------
+        observation_lines : list
+        
+        Returns
+        --------------------
+        observation : dict
+        """
         observation = dict()
         ds18b20_uq = list()
 

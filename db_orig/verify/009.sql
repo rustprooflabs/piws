@@ -1,4 +1,4 @@
--- Verify PiWS:001 on pg
+-- Verify piws:009 on pg
 
 BEGIN;
 

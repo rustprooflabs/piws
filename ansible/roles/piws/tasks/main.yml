@@ -1,14 +1,24 @@
 ---
 
 
-- name: "Clone Pi Weather Station (PiWS) Repository.  Branch:  {{ repo_branch }}"
-  git:
-    repo: "{{ repo_url }}"
-    dest: "{{ repo_path }}"
-    version: "{{ repo_branch }}"
-    key_file: "{{ ssh_path }}/id_rsa"
-    accept_hostkey: yes
-    force: yes
+- name: "Ensure directory {{ repo_path }} exists"
+  file:
+    path: "{{ repo_path }}"
+    state: directory
+    mode: 0755
+
+
+- name: "Sync paths to target server at path {{ repo_path}}"
+  copy:
+    src: "../../../{{ item }}"
+    dest: "{{ repo_path }}/{{ item }}"
+  with_items:
+    - piws/
+    - db/
+    - run_station.py
+    - requirements.txt
+    - LICENSE
+    - README.md
 
 
 - name: "Clone PostgreSQL Data Dictionary (pgdd) Repository."
@@ -21,13 +31,23 @@
     force: yes
 
 
-
 - name: Create piws database
   postgresql_db:
     name: "{{ piws_db_name }}"
     encoding: UTF-8
     template: template0
   become_user: postgres
+
+- name: Install pgdd extension
+  shell: "make install"
+  args:
+    chdir: "{{ repo_path_pgdd }}"
+
+
+- name: "Create pgdd extension"
+  command: "psql -d {{ piws_db_name }} -c \" CREATE EXTENSION IF NOT EXISTS pgdd;  \" "
+  become_user: postgres
+  become: yes
 
 
 - name: Create piws Database user
@@ -38,10 +58,23 @@
     priv: "ALL"
   become_user: postgres
 
-- name: Deploy PostgreSQL data dictionary to PiWS database
-  shell: "sqitch deploy db:pg://{{ piws_db_user }}:{{ piws_db_password }}@{{ piws_db_ip }}:5432/{{ piws_db_name }}"
-  args:
-    chdir: "{{ repo_path_pgdd }}/db"
+
+- name: "Allow {{ piws_db_user }} user USAGE dd schema"
+  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON SCHEMA dd TO {{ piws_db_user }};  \" "
+  become_user: postgres
+  become: yes
+
+
+- name: "Allow {{ piws_db_user }} user full permissions on tables in dd schema"
+  command: "psql -d {{ piws_db_name }} -c \" GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dd TO {{ piws_db_user }};  \" "
+  become_user: postgres
+  become: yes
+
+
+- name: "Allow {{ piws_db_user }} user access to sequences in dd schema"
+  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON ALL SEQUENCES IN SCHEMA dd TO {{ piws_db_user }};  \" "
+  become_user: postgres
+  become: yes
 
 
 # Note:  Added PGOPTIONS.... before sqitch command to fix issue with delta 004 that cropped up today RE non-fully qualified schemas...
@@ -137,6 +170,26 @@
   command: "systemctl enable piws"
   notify:
     - "Restart PiWS service"
+
+
+
+- name: Schedule crontab to load raw observations to main observation table
+  cron:
+    name: "PiWS-LoadRawObservations"
+    minute: "*"
+    job: "/usr/bin/psql -d {{ piws_db_name }} -c 'SELECT * FROM piws.load_raw_observations()' "
+    state: present
+  become_user: postgres
+
+
+- name: Schedule crontab to clear old and imported raw observations
+  cron:
+    name: "PiWS-ClearRawObservations"
+    minute: "8"
+    hour: "*"
+    job: "/usr/bin/psql -d {{ piws_db_name }} -c 'SELECT * FROM piws.clean_raw_observations()' "
+    state: present
+  become_user: postgres
 
 
 

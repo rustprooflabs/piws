@@ -15,7 +15,14 @@ except KeyError:
 LOGGER = logging.getLogger(__name__)
 LOG_FORMAT = '%(levelname)s - %(asctime)s - %(name)s - %(message)s'
 LOG_PATH = '/var/log/piws/piws.log'
-HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+
+try:
+    HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+except FileNotFoundError:
+    print('WARNING!  LOG_PATH (%s) not found.  Defaulting to local path.')
+    LOG_PATH = './piws.log'
+    HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+
 FORMATTER = logging.Formatter(LOG_FORMAT)
 HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)
@@ -44,13 +51,15 @@ except KeyError:
     msg = 'DB Port not set.  Defaulting to 5432'
     LOGGER.debug(msg)
 
+APP_NAME = 'PiWS'
 
 def get_db_string():
     """ Builds the database connection string based on set parameters."""
-    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}'
+    database_string = 'postgresql://{user}:{pw}@{host}:{port}/{dbname}?application_name={app}'
 
     return database_string.format(user=DB_USER, pw=DB_PW, host=DB_HOST,
-                                  port=DB_PORT, dbname=DB_NAME)
+                                  port=DB_PORT, dbname=DB_NAME,
+                                  app=APP_NAME)
 
 
 DATABASE_STRING = get_db_string()

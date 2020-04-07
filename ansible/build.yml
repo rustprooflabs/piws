@@ -4,7 +4,6 @@
 
   roles:
     - server
-    - ssh
     - ufw
     - wifi
     - postgresql_server

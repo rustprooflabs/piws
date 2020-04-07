@@ -21,6 +21,7 @@
     - postgresql-client
     - htop
     - python-psycopg2
+    - python3-psycopg2
     - libpq-dev
     - python3-dev
     - iotop
@@ -30,14 +31,13 @@
 
 - name: Clean out files to save space on small devices
   command: apt-get clean
-  #become: yes
 
 
-- name: "Create PiWS admin User: {{ piws_admin_user }}"
+- name: "Create PiWS Linux User: {{ piws_admin_user }}"
   user:
     name: "{{ piws_admin_user }}"
     password: "{{ piws_admin_password }}"
-    groups: sudo,dialout
+    groups: dialout
     append: yes
     shell: /bin/bash
 
@@ -56,6 +56,17 @@
     hour: 5
     job: "/sbin/shutdown -r now"
     state: present
+  when: pi_reboot
+
+
+- name: Set crontab to NOT reboot Pi once a day
+  cron:
+    name: "reboot pi"
+    minute: 37
+    hour: 5
+    job: "/sbin/shutdown -r now"
+    state: absent
+  when: not pi_reboot
 
 
 ...

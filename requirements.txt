@@ -1,3 +1,6 @@
-psycopg2==2.7.3.2
+coverage==4.5.4
+psycopg2==2.8.3
+pytest==5.0.1
+pytz==2019.3
 pyserial==3.4
-requests==2.21.0
+requests==2.22.0
