@@ -3,16 +3,17 @@
 
 - name: "Install PostgreSQL {{ pg_version }} packages"
   apt:
-    package: "{{ item }}"
+    package:
+      [
+        'postgresql-{{ pg_version }}'
+        'sqitch',
+        'postgresql-server-dev-{{ pg_version }}',
+        'make'
+      ]
     state: present
     update_cache: yes
     cache_valid_time: 3600
-  with_items:
-    - "postgresql-{{ pg_version }}"
-    - python-psycopg2
-    - sqitch
-    - postgresql-server-dev-{{ pg_version }}
-    - make
+
 
 - name: Copy postgres.conf template
   template:

@@ -1,6 +1,6 @@
 ---
 
-pg_version: 11
+pg_version: 14
 
 pg_wal_level: minimal
 pg_max_wal_senders: 0
