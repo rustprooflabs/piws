@@ -10,23 +10,22 @@
 
 - name: Install basic Packages
   apt:
-    package: "{{ item }}"
+    package:
+      ['git',
+       'nano',
+       'postgresql-client-common',
+       'postgresql-client',
+       'htop',
+       'python3-psycopg2',
+       'libpq-dev',
+       'python3-dev',
+       'iotop',
+       'ufw',
+       'policykit-1'
+       ]
     state: present
     update_cache: yes
     cache_valid_time: 3600
-  with_items:
-    - git
-    - nano
-    - postgresql-client-common
-    - postgresql-client
-    - htop
-    - python-psycopg2
-    - python3-psycopg2
-    - libpq-dev
-    - python3-dev
-    - iotop
-    - ufw
-    - policykit-1
 
 
 - name: Clean out files to save space on small devices
