@@ -1,7 +1,7 @@
 ---
 
 pip_download_dest: /tmp
-python: python
+python: python3
 pip:  pip
 
 ...
