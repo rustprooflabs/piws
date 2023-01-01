@@ -5,7 +5,7 @@
   apt:
     package:
       [
-        'postgresql-{{ pg_version }}'
+        'postgresql-{{ pg_version }}',
         'sqitch',
         'postgresql-server-dev-{{ pg_version }}',
         'make'
