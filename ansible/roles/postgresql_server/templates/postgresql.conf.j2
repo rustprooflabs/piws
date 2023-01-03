@@ -66,7 +66,9 @@ ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'		# (change requires resta
 ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'		# (change requires restart)
 #ssl_ca_file = ''			# (change requires restart)
 #ssl_crl_file = ''			# (change requires restart)
-password_encryption = on
+password_encryption = scram-sha-256
+ssl_min_protocol_version = 'TLSv1.2'
+
 #db_user_namespace = off
 #row_security = on
 
@@ -219,7 +221,6 @@ min_wal_size = {{ pg_min_wal_size }}
 
 max_wal_senders = {{ pg_max_wal_senders }}
 				# (change requires restart)
-wal_keep_segments = {{ pg_wal_keep_segments }}  # in logfile segments, 16MB each; 0 disables
 #wal_sender_timeout = 60s	# in milliseconds; 0 disables
 
 #max_replication_slots = 0	# max number of replication slots
@@ -301,6 +302,7 @@ hot_standby = {{ pg_hot_standby }}
 
 # - Other Planner Options -
 
+jit = off
 #default_statistics_target = 100	# range 1-10000
 #constraint_exclusion = partition	# on, off, or partition
 #cursor_tuple_fraction = 0.1		# range 0.0-1.0
