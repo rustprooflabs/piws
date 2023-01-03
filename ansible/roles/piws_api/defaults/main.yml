@@ -11,7 +11,7 @@ piws_db_user: piws
 piws_db_ip: 127.0.0.1
 piws_db_password: SecurePassword
 
-python_version: python3.7
+python_version: python3.10
 
 tyg_sensor_id: -1
 tyg_api_key: 'NotARealKey'
