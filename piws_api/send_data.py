@@ -57,7 +57,7 @@ def get_new_observations():
 
     Each row returned is in JSON format."""
     sql_raw = 'SELECT * FROM piws.api_json()'
-    params = list
+    params = None
     results = db.sel_multi(sql_raw, params)
     return results
 
