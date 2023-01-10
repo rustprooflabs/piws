@@ -27,9 +27,13 @@ class QuitScreen(Screen):
 
 
 class SensorScreen(Screen):
+    def __init__(self, sensor_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sensor_name = sensor_name
+
     def compose(self) -> ComposeResult:
         yield Grid(
-            Static('This is a screen', id='question'),
+            Static(f'This is a screen for .... {self.sensor_name}', id='question'),
             Button("Frank", variant="error", id="quit"),
             Button("and Beans", variant="primary", id="cancel"),
             id="dialog",
@@ -41,9 +45,8 @@ class SensorScreen(Screen):
 
 class Hello(Widget):
     """Display a greeting."""
-
     def render(self) -> RenderResult:
-        return "PiWS CLI [b]In Development[/b]!"
+        return "PiWS CLI is [b]In Development[/b]!"
 
 
 class PostgresVersion(Content):
@@ -63,30 +66,31 @@ class PostgresVersion(Content):
 class SensorList(Widget):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
-        print(event.button)
-        self.app.push_screen(SensorScreen())
-        if event.button.id == "start":
-            self.add_class("started")
-        elif event.button.id == "stop":
-            self.remove_class("started")
+        sensor_name = event.button.id
+        self.app.push_screen(SensorScreen(sensor_name=sensor_name))
+        #self.app.push_screen(SensorScreen())
 
     def compose(self) -> ComposeResult:
         sensors = self.get_sensors()
         for sensor in sensors:
-            sensor_name = sensor['name']
-            value_type = sensor['value_type']
-            sensor_item = f'{sensor_name} ({value_type})'
-            yield Button(sensor_item)
+            sensor_display = sensor['sensor_display']
+            sensor_name = sensor['sensor_name']
+            yield Button(sensor_display, id=sensor_name)
+
 
     def get_sensors(self):
         """Queries database for sensors available.
         """
         sql_raw = """
-SELECT nm.id, nm.name, nm.column_name ,
-        vt.name AS value_type, vu.name AS value_unit
-    FROM sensor.node_model nm
-    INNER JOIN sensor.value_type vt ON nm.value_type_id = vt.id
-    INNER JOIN sensor.value_unit vu ON nm.value_unit_id = vu.id
+SELECT DISTINCT 
+        CASE WHEN o.node_unique_id IS NULL THEN o.sensor_name
+            ELSE o.sensor_name || '-' || o.node_unique_id
+            END AS sensor_name,
+        CASE WHEN o.node_unique_id IS NULL THEN nm.name
+            ELSE nm.name || '-' || o.node_unique_id
+            END AS sensor_display
+    FROM piws.vobservation o
+    INNER JOIN sensor.node_model nm ON o.sensor_name = nm.column_name
 ;
 """
         data = db.get_data(sql_raw=sql_raw)

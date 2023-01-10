@@ -1,15 +1,16 @@
 Hello {
     layout: horizontal;
+    content-align: center middle;
     background: $boost;
-    height: 3;
+    height: 5;
     margin: 1;
-    width: 50;
     padding: 1;
+    border: double $background;
 }
 
 PostgresVersion {
     layout: horizontal;
-    background: orange;
+    background: rgb(40, 19, 198);
     height: 5;
     margin: 1;
     min-width: 45;
