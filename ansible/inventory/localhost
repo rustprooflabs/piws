@@ -11,3 +11,4 @@ ansible_user=root
 ansible_become=true
 AllowUsers=root {{ piws_admin_user }}
 
+#pi_reboot=false

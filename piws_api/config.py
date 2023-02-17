@@ -14,8 +14,12 @@ except KeyError:
 # Setup Logging
 LOGGER = logging.getLogger(__name__)
 LOG_FORMAT = '%(levelname)s - %(asctime)s - %(name)s - %(message)s'
-LOG_PATH = '/var/log/piws/piws_api.log'
-HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+LOG_FILENAME = 'piws_api.log'
+LOG_PATH = f'/var/log/piws/{LOG_FILENAME}'
+try:
+    HANDLER = logging.FileHandler(filename=LOG_PATH, mode='a+')
+except FileNotFoundError:
+    HANDLER = logging.FileHandler(filename=f'./{LOG_FILENAME}', mode='a+')
 FORMATTER = logging.Formatter(LOG_FORMAT)
 HANDLER.setFormatter(FORMATTER)
 LOGGER.addHandler(HANDLER)

@@ -2,3 +2,4 @@
 piws/__pycache__/
 *.pyc
 coverage.xml
+*.log

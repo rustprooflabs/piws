@@ -31,7 +31,7 @@ def process_observations():
         LOGGER.debug('0 new observations')
 
     for observation in observations:
-        observation = observation[0]
+        observation = observation['observation_data']
         LOGGER.debug('Observation object type:  %s', type(observation))
         status_code = send_observation(observation)
         LOGGER.debug('API POST status code:  %s', status_code)
@@ -57,7 +57,7 @@ def get_new_observations():
 
     Each row returned is in JSON format."""
     sql_raw = 'SELECT * FROM piws.api_json()'
-    params = list
+    params = None
     results = db.sel_multi(sql_raw, params)
     return results
 

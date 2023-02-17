@@ -21,14 +21,14 @@
     - README.md
 
 
-- name: "Clone PostgreSQL Data Dictionary (pgdd) Repository."
-  git:
-    repo: "{{ repo_url_pgdd }}"
-    dest: "{{ repo_path_pgdd }}"
-    version: "{{ repo_branch_pgdd }}"
-    key_file: "{{ ssh_path }}/id_rsa"
-    accept_hostkey: yes
-    force: yes
+#- name: "Clone PostgreSQL Data Dictionary (pgdd) Repository."
+#  git:
+#    repo: "{{ repo_url_pgdd }}"
+#    dest: "{{ repo_path_pgdd }}"
+#    version: "{{ repo_branch_pgdd }}"
+#    key_file: "{{ ssh_path }}/id_rsa"
+#    accept_hostkey: yes
+#    force: yes
 
 
 - name: Create piws database
@@ -38,16 +38,16 @@
     template: template0
   become_user: postgres
 
-- name: Install pgdd extension
-  shell: "make install"
-  args:
-    chdir: "{{ repo_path_pgdd }}"
+#- name: Install pgdd extension
+#  shell: "make install"
+#  args:
+#    chdir: "{{ repo_path_pgdd }}"
 
 
-- name: "Create pgdd extension"
-  command: "psql -d {{ piws_db_name }} -c \" CREATE EXTENSION IF NOT EXISTS pgdd;  \" "
-  become_user: postgres
-  become: yes
+#- name: "Create pgdd extension"
+#  command: "psql -d {{ piws_db_name }} -c \" CREATE EXTENSION IF NOT EXISTS pgdd;  \" "
+#  become_user: postgres
+#  become: yes
 
 
 - name: Create piws Database user
@@ -59,22 +59,22 @@
   become_user: postgres
 
 
-- name: "Allow {{ piws_db_user }} user USAGE dd schema"
-  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON SCHEMA dd TO {{ piws_db_user }};  \" "
-  become_user: postgres
-  become: yes
+#- name: "Allow {{ piws_db_user }} user USAGE dd schema"
+#  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON SCHEMA dd TO {{ piws_db_user }};  \" "
+#  become_user: postgres
+#  become: yes
 
 
-- name: "Allow {{ piws_db_user }} user full permissions on tables in dd schema"
-  command: "psql -d {{ piws_db_name }} -c \" GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dd TO {{ piws_db_user }};  \" "
-  become_user: postgres
-  become: yes
+#- name: "Allow {{ piws_db_user }} user full permissions on tables in dd schema"
+#  command: "psql -d {{ piws_db_name }} -c \" GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA dd TO {{ piws_db_user }};  \" "
+#  become_user: postgres
+#  become: yes
 
 
-- name: "Allow {{ piws_db_user }} user access to sequences in dd schema"
-  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON ALL SEQUENCES IN SCHEMA dd TO {{ piws_db_user }};  \" "
-  become_user: postgres
-  become: yes
+#- name: "Allow {{ piws_db_user }} user access to sequences in dd schema"
+#  command: "psql -d {{ piws_db_name }} -c \" GRANT USAGE ON ALL SEQUENCES IN SCHEMA dd TO {{ piws_db_user }};  \" "
+#  become_user: postgres
+#  become: yes
 
 
 # Note:  Added PGOPTIONS.... before sqitch command to fix issue with delta 004 that cropped up today RE non-fully qualified schemas...

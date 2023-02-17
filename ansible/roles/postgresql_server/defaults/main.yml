@@ -1,10 +1,9 @@
 ---
 
-pg_version: 11
+pg_version: 14
 
 pg_wal_level: minimal
 pg_max_wal_senders: 0
-pg_wal_keep_segments: 8
 pg_hot_standby: off
 
 pg_checkpoint_timeout: 60min

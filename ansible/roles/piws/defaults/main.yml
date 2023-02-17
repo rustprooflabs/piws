@@ -9,10 +9,10 @@ piws_db_name: piws
 piws_db_user: piws
 piws_db_ip: 127.0.0.1
 
-python_version: python3.7
+python_version: python3.10
 
 repo_url_pgdd: https://github.com/rustprooflabs/pgdd.git
-repo_branch_pgdd: master
+repo_branch_pgdd: main
 repo_path_pgdd: /srv/pgdd
 
 piws_db_password: SecurePassword
