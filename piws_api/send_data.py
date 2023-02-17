@@ -31,7 +31,7 @@ def process_observations():
         LOGGER.debug('0 new observations')
 
     for observation in observations:
-        observation = observation[0]
+        observation = observation['observation_data']
         LOGGER.debug('Observation object type:  %s', type(observation))
         status_code = send_observation(observation)
         LOGGER.debug('API POST status code:  %s', status_code)
