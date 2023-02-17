@@ -101,9 +101,14 @@ coverage run -m unittest tests/*.py
 
 ```
 
-## Licensing
+## CLI
 
-MIT
+
+```bash
+cd piws_cli
+env $(cat ~/.piws_cli.env | grep -v ^# | xargs) python piws_cli.py
+
+```
 
 
 ## Contribution guidelines
